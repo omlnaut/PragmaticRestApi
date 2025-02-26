@@ -8,7 +8,7 @@
             "name": "C#: DevHabit.Api Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/DevHabit.Api/DevHabit.Api.csproj",
+            "projectPath": "${workspaceFolder}/src/DevHabit.Api/DevHabit.Api.csproj",
             "preLaunchTask": "build",
         }
     ]
