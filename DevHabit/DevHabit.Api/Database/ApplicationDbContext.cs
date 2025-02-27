@@ -9,5 +9,4 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.HasDefaultSchema(Schemas.Application);
 
     }
-
 }

@@ -1,4 +1,5 @@
 using DevHabit.Api.Database;
+using DevHabit.Api.Extensions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -46,6 +47,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    await app.ApplyMigrationAsync();
 }
 
 
