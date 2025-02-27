@@ -7,7 +7,7 @@
 			"type": "process",
 			"args": [
 				"build",
-				"${workspaceFolder}/DevHabit.Api/DevHabit.Api.csproj",
+				"${workspaceFolder}/src/DevHabit.Api/DevHabit.Api.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary"
 			],
