@@ -11,6 +11,7 @@
             },
             "containerName": "devhabit.api",
             "preLaunchTask": "docker-compose: debug up",
+            "postDebugTask": "docker-compose: debug down",
             "netCore": {
                 "debuggerPath": "/remote_debugger/vsdbg"
             }
