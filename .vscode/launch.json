@@ -10,7 +10,6 @@
             "request": "launch",
             "projectPath": "${workspaceFolder}/DevHabit.Api/DevHabit.Api.csproj",
             "preLaunchTask": "build",
-            "postDebugTask": "clean"
         }
     ]
 }
