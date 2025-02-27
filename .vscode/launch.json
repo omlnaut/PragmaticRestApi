@@ -8,6 +8,11 @@
             "platform": "netCore",
             "sourceFileMap": {
                 "/src": "${workspaceFolder}"
+            },
+            "containerName": "devhabit.api",
+            "preLaunchTask": "docker-compose: debug up",
+            "netCore": {
+                "debuggerPath": "/remote_debugger/vsdbg"
             }
         }
     ]

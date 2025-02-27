@@ -5,6 +5,7 @@ version: '3.4'
 services:
   devhabitapi:
     image: devhabitapi
+    container_name: devhabit.api
     build:
       context: .
       dockerfile: src/DevHabit.Api/Dockerfile
