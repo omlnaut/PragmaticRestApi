@@ -9,12 +9,12 @@ USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Release
 WORKDIR /src
-COPY ["src/DevHabit.Api/DevHabit.Api.csproj", "src/DevHabit.Api/"]
+COPY ["DevHabit.Api/DevHabit.Api.csproj", "src/DevHabit.Api/"]
 COPY ["Directory.Build.props", "."]
 COPY ["Directory.Packages.props", "."]
 RUN dotnet restore "src/DevHabit.Api/DevHabit.Api.csproj"
 COPY . .
-WORKDIR "/src/src/DevHabit.Api"
+WORKDIR "/src/DevHabit.Api"
 RUN dotnet build "DevHabit.Api.csproj" -c $configuration -o /app/build
 
 FROM build AS publish

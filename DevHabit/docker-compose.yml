@@ -7,7 +7,7 @@ services:
     image: devhabitapi
     build:
       context: .
-      dockerfile: src/DevHabit.Api/Dockerfile
+      dockerfile: DevHabit.Api/Dockerfile
     ports:
       - 8080:5000
       - 8081:5001

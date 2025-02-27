@@ -10,8 +10,8 @@
                     "build": true,
                 },
                 "files": [
-                    "${workspaceFolder}/docker-compose.yml",
-                    "${workspaceFolder}/docker-compose.debug.yml"
+                    "${workspaceFolder}/DevHabit/docker-compose.yml",
+                    "${workspaceFolder}/DevHabit/docker-compose.debug.yml"
                 ]
             },
         },
@@ -21,10 +21,10 @@
             "command": "docker-compose",
             "args": [
                 "-f",
-                "${workspaceFolder}/docker-compose.debug.yml",
+                "${workspaceFolder}/DevHabit/docker-compose.debug.yml",
                 "down"
             ],
             "problemMatcher": []
-        },
+        }
     ]
 }
