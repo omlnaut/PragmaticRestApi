@@ -2,6 +2,20 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "type": "docker-compose",
+            "label": "docker-compose: debug up",
+            "dockerCompose": {
+                "up": {
+                    "detached": true,
+                    "build": true,
+                },
+                "files": [
+                    "${workspaceFolder}/docker-compose.yml",
+                    "${workspaceFolder}/docker-compose.debug.yml"
+                ]
+            },
+        },
+        {
             "label": "build",
             "command": "dotnet",
             "type": "process",
