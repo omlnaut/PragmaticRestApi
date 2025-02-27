@@ -12,8 +12,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
 app.UseHttpsRedirection();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync().ConfigureAwait(false); // Change to false to avoid potential deadlocks
