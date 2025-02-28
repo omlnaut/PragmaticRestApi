@@ -4,6 +4,8 @@ using DevHabit.Api.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
+using Npgsql;
+
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -27,6 +29,7 @@ builder.Services.AddOpenTelemetry()
     ).WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
         .AddHttpClientInstrumentation()
+        .AddNpgsql()
     )
     .WithMetrics(metrics => metrics
         .AddHttpClientInstrumentation()
