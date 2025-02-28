@@ -12,7 +12,7 @@ public sealed record HabitsCollectionDto
 public sealed record HabitDto
 {
     public required string Id { get; init; }
-    public required string Name { get; init; } = string.Empty;
+    public required string Name { get; init; }
     public string? Description { get; init; }
     public required FrequencyDto Frequency { get; init; }
     public required TargetDto Target { get; init; }
