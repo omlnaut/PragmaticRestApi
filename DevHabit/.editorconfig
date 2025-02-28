@@ -1,5 +1,9 @@
 root = true
 
+# Disable all analyzer diagnostics for any .cs files under the Migrations folder
+[**/Migrations/**/*.cs]
+dotnet_diagnostic.CA1707.severity = none
+
 # All files
 [*]
 indent_style = space
@@ -369,8 +373,5 @@ dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA1031.severity = none
 
 
-# Disable all analyzer diagnostics for any .cs files under the Migrations folder
-[**/Migrations/**/*.cs]
-dotnet_analyzer_diagnostic.severity = none
 
 
