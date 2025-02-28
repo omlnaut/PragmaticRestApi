@@ -2,6 +2,7 @@ using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
 
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,4 +51,44 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
         return Ok(habitsDto);
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<HabitDto>> GetHabitById(string id)
+    {
+        var habit = await dbContext.Habits
+            .Select(habit => new HabitDto
+            {
+                Id = habit.Id,
+                Name = habit.Name,
+                Description = habit.Description,
+                Frequency = new FrequencyDto
+                {
+                    TimesPerPeriod = habit.Frequency.TimesPerPeriod,
+                    Type = habit.Frequency.Type
+                },
+                Target = new TargetDto
+                {
+                    Value = habit.Target.Value,
+                    Unit = habit.Target.Unit
+                },
+                Status = habit.Status,
+                IsArchived = habit.IsArchived,
+                EndDate = habit.EndDate,
+                Milestone = habit.Milestone == null ? null : new MilestoneDto
+                {
+                    Target = habit.Milestone.Target,
+                    Current = habit.Milestone.Current
+                },
+                CreatedAtUtc = habit.CreatedAtUtc,
+                UpdatedAtUtc = habit.UpdatedAtUtc,
+                LastCompletedAt = habit.LastCompletedAt
+            })
+            .FirstOrDefaultAsync(h => h.Id == id);
+
+        if (habit is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(habit);
+    }
 }
