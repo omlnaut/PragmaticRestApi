@@ -367,3 +367,10 @@ dotnet_diagnostic.CA1848.severity = none
 dotnet_diagnostic.CA2007.severity = none
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA1031.severity = none
+
+
+# Disable all analyzer diagnostics for any .cs files under the Migrations folder
+[**/Migrations/**/*.cs]
+dotnet_analyzer_diagnostic.severity = none
+
+
