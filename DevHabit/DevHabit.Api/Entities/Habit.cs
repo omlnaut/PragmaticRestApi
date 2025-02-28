@@ -4,6 +4,7 @@ public sealed class Habit
 {
     public required string Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public HabitType Type { get; set; }
     public string? Description { get; set; }
     public required Frequency Frequency { get; set; }
     public required Target Target { get; set; }

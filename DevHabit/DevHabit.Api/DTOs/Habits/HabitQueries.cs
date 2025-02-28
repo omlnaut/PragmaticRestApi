@@ -12,6 +12,7 @@ internal static class HabitQueries
         {
             Id = habit.Id,
             Name = habit.Name,
+            Type = habit.Type,
             Description = habit.Description,
             Frequency = new FrequencyDto
             {

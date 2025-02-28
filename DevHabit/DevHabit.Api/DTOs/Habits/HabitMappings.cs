@@ -12,6 +12,7 @@ internal static class HabitMappings
         {
             Id = $"h_{Guid.NewGuid()}",
             Name = dto.Name,
+            Type = dto.Type,
             Description = dto.Description,
             Frequency = new Frequency
             {
@@ -44,6 +45,7 @@ internal static class HabitMappings
         {
             Id = habit.Id,
             Name = habit.Name,
+            Type = habit.Type,
             Description = habit.Description,
             Frequency = new FrequencyDto
             {

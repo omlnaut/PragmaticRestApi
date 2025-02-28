@@ -1,6 +1,7 @@
 using HabitStatus = DevHabit.Api.Entities.HabitStatus;
 using FrequencyType = DevHabit.Api.Entities.FrequencyType;
 using System.Collections.ObjectModel;
+using DevHabit.Api.Entities;
 
 namespace DevHabit.Api.DTOs.Habits;
 
@@ -13,6 +14,7 @@ public sealed record HabitDto
 {
     public required string Id { get; init; }
     public required string Name { get; init; }
+    public required HabitType Type { get; init; }
     public string? Description { get; init; }
     public required FrequencyDto Frequency { get; init; }
     public required TargetDto Target { get; init; }

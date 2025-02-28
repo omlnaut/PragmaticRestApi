@@ -52,6 +52,6 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 
         var dto = habit.ToDto();
 
-        return dto;
+        return CreatedAtAction(nameof(GetHabitById), new { id = dto.Id }, dto);
     }
 }
