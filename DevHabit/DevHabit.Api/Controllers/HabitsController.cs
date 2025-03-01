@@ -86,7 +86,7 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
         var habitDto = habit.ToDto();
         patchDocument.ApplyTo(habitDto);
 
-        if (!ModelState.IsValid)
+        if (!TryValidateModel(habitDto))
         {
             return ValidationProblem(ModelState);
         }
