@@ -26,7 +26,7 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<TagDto>> GetHabitById(string id)
+    public async Task<ActionResult<TagDto>> GetTagById(string id)
     {
         var tag = await dbContext.Tags
             .Select(TagQueries.ToDto())
@@ -44,6 +44,11 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
     public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createTagDto)
     {
         var tag = createTagDto.ToEntity();
+
+        if (await dbContext.Tags.AnyAsync(t => t.Name == tag.Name))
+        {
+            return Conflict(new { message = $"Tag with the name {tag.Name} already exists." });
+        }
 
         dbContext.Tags.Add(tag);
 
