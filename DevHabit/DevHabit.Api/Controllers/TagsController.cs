@@ -71,43 +71,17 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("{id}")]
-    public async Task<ActionResult> PatchHabit(string id, JsonPatchDocument<HabitDto> patchDocument)
-    {
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id);
-
-        if (habit is null)
-        {
-            return NotFound();
-        }
-
-        var habitDto = habit.ToDto();
-        patchDocument.ApplyTo(habitDto);
-
-        if (!TryValidateModel(habitDto))
-        {
-            return ValidationProblem(ModelState);
-        }
-
-        habit.Name = habitDto.Name;
-        habit.Description = habitDto.Description;
-        habit.UpdatedAtUtc = DateTime.UtcNow;
-
-        await dbContext.SaveChangesAsync();
-        return NoContent();
-    }
-
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteHabit(string id)
+    public async Task<ActionResult> DeleteTag(string id)
     {
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id);
+        var tag = await dbContext.Tags.FirstOrDefaultAsync(t => t.Id == id);
 
-        if (habit is null)
+        if (tag is null)
         {
             return NotFound();
         }
 
-        dbContext.Habits.Remove(habit);
+        dbContext.Tags.Remove(tag);
         await dbContext.SaveChangesAsync();
 
         return NoContent();
