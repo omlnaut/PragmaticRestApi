@@ -55,17 +55,17 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateHabit(string id, [FromBody] UpdateHabitDto updateHabitDto)
+    public async Task<ActionResult> UpdateTag(string id, [FromBody] UpdateTagDto updateTagDto)
     {
 
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id);
+        var tag = await dbContext.Tags.FirstOrDefaultAsync(t => t.Id == id);
 
-        if (habit is null)
+        if (tag is null)
         {
             return NotFound();
         }
 
-        habit.UpdateFromDto(updateHabitDto);
+        tag.UpdateFromDto(updateTagDto);
         await dbContext.SaveChangesAsync();
 
         return NoContent();
