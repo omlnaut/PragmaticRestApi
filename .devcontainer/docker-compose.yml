@@ -1,0 +1,57 @@
+version: '3.8'
+
+networks:
+  devhabit_net:
+    driver: bridge
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    volumes:
+      - ../..:/workspaces:cached
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    container_name: devhabit.api
+    ports:
+      - 8080:5000
+      - 8081:5001
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+    networks:
+      - devhabit_net
+    
+    # Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    # user: root
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  devhabit.postgres:
+    image: postgres:17.2
+    container_name: devhabit.postgres
+    environment:
+      POSTGRES_DB: devhabit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./.containers/postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - devhabit_net
+
+  devhabit.aspire-dashboard:
+    container_name: devhabit.aspire-dashboard
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
+    environment:
+      DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: true
+    ports:
+      - 18888:18888
+    networks:
+      - devhabit_net

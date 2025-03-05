@@ -1,19 +1,25 @@
 {
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Docker .NET Attach (Preview)",
-            "type": "docker",
-            "request": "attach",
-            "platform": "netCore",
-            "sourceFileMap": {
-                "/src": "${workspaceFolder}"
+            "name": "C#: devcontainer Debug",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/DevHabit/DevHabit.Api/bin/Debug/net8.0/DevHabit.Api.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/DevHabit/DevHabit.Api",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/swagger"
             },
-            "containerName": "devhabit.api",
-            "preLaunchTask": "docker-compose: debug up",
-            "postDebugTask": "docker-compose: debug down",
-            "netCore": {
-                "debuggerPath": "/remote_debugger/vsdbg"
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://0.0.0.0:5000"
             }
         }
     ]
