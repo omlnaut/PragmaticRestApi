@@ -1,0 +1,7 @@
+POST http://localhost:5000/tags
+Content-Type: application/json
+
+{
+    "name": "testia",
+    "description": "This is an example tag description"
+}

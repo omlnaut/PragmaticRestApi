@@ -1,5 +1,3 @@
-using System.Diagnostics.Tracing;
-
 using DevHabit.Api.Entities;
 
 namespace DevHabit.Api.DTOs.Habits;

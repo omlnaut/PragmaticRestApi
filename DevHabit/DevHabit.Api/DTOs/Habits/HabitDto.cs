@@ -1,6 +1,5 @@
 using HabitStatus = DevHabit.Api.Entities.HabitStatus;
 using FrequencyType = DevHabit.Api.Entities.FrequencyType;
-using System.Collections.ObjectModel;
 using DevHabit.Api.Entities;
 
 namespace DevHabit.Api.DTOs.Habits;
