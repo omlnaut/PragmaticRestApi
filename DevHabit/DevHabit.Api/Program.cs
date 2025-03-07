@@ -1,6 +1,8 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.Extensions;
 
+using FluentValidation;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -19,6 +21,8 @@ builder.Services.AddControllers(options =>
 })
 .AddNewtonsoftJson()
 .AddXmlSerializerFormatters();
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>(includeInternalTypes: true);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

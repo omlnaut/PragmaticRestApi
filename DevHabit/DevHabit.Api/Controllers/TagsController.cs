@@ -1,6 +1,8 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Tags;
 
+using FluentValidation;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,8 +41,17 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createTagDto)
+    public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createTagDto, IValidator<CreateTagDto> validator)
     {
+        // validate
+        var validationResult = await validator.ValidateAsync(createTagDto);
+
+        if (!validationResult.IsValid)
+        {
+            return ValidationProblem(new ValidationProblemDetails(validationResult.ToDictionary()));
+        }
+
+        // Check if the tag already exists
         var tag = createTagDto.ToEntity();
 
         if (await dbContext.Tags.AnyAsync(t => t.Name == tag.Name))
