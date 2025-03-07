@@ -9,6 +9,5 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Make dotnet tools available
-RUN export PATH="$PATH:/root/.dotnet/tools" \
-    && dotnet tool restore
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
