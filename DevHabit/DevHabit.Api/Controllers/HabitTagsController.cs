@@ -55,11 +55,24 @@ public sealed class HabitTagsController(ApplicationDbContext dbContext) : Contro
         }));
 
         await dbContext.SaveChangesAsync();
+
+        return NoContent();
     }
 
     [HttpDelete("{tagId}")]
-    public IActionResult DeleteHabitTags(int habitId, string tagId)
+    public async Task<IActionResult> DeleteHabitTags(string habitId, string tagId)
     {
+        var habitTag = await dbContext.HabitTags.FirstOrDefaultAsync(h => h.HabitId == habitId && h.TagId == tagId);
+
+        if (habitTag is null)
+        {
+            return NotFound();
+        }
+
+        dbContext.HabitTags.Remove(habitTag);
+
+        await dbContext.SaveChangesAsync();
+
         return NoContent();
     }
 
