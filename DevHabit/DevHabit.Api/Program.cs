@@ -41,6 +41,8 @@ builder.Services.AddProblemDetails(options =>
         context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
     };
 });
+
+builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddOpenTelemetry()

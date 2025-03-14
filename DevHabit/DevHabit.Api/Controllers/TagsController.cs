@@ -44,12 +44,7 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
     public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createTagDto, IValidator<CreateTagDto> validator)
     {
         // validate
-        var validationResult = await validator.ValidateAsync(createTagDto);
-
-        if (!validationResult.IsValid)
-        {
-            return ValidationProblem(new ValidationProblemDetails(validationResult.ToDictionary()));
-        }
+        await validator.ValidateAndThrowAsync(createTagDto);
 
         // Check if the tag already exists
         var tag = createTagDto.ToEntity();
@@ -57,7 +52,6 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
         if (await dbContext.Tags.AnyAsync(t => t.Name == tag.Name))
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext, StatusCodes.Status400BadRequest);
-            problem.Extensions.Add("errors", validationResult.ToDictionary());
             return BadRequest(problem);
         }
 
