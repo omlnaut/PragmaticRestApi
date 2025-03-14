@@ -33,6 +33,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     .UseSnakeCaseNamingConvention();
 });
 
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+    };
+});
+
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource
         .AddService(builder.Environment.ApplicationName)

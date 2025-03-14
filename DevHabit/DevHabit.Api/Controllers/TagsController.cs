@@ -56,7 +56,9 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
 
         if (await dbContext.Tags.AnyAsync(t => t.Name == tag.Name))
         {
-            return Conflict(new { message = $"Tag with the name {tag.Name} already exists." });
+            var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext, StatusCodes.Status400BadRequest);
+            problem.Extensions.Add("errors", validationResult.ToDictionary());
+            return BadRequest(problem);
         }
 
         dbContext.Tags.Add(tag);
