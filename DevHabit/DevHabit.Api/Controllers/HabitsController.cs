@@ -15,18 +15,18 @@ namespace DevHabit.Api.Controllers;
 public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<HabitsCollectionDto>> GetHabits(string? search, HabitType? type, HabitStatus? status)
+    public async Task<ActionResult<HabitsCollectionDto>> GetHabits([FromQuery] QueryParameters query)
     {
         var habitsQueryable = dbContext
             .Habits;
 
-        search ??= search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+        query.search ??= query.search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
 
-        habitsQueryable.Where(h => search == null || h.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+        habitsQueryable.Where(h => query.search == null || h.Name.Contains(query.search, StringComparison.InvariantCultureIgnoreCase)
                                     || h.Description != null
-                                    && h.Description.Contains(search, StringComparison.InvariantCultureIgnoreCase))
-                        .Where(h => type == null || h.Type == type)
-                        .Where(h => status == null || h.Status == status);
+                                    && h.Description.Contains(query.search, StringComparison.InvariantCultureIgnoreCase))
+                        .Where(h => query.type == null || h.Type == query.type)
+                        .Where(h => query.status == null || h.Status == query.status);
 
 
         List<HabitDto> habits = await habitsQueryable
