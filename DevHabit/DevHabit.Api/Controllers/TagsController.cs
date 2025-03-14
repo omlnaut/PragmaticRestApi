@@ -52,6 +52,7 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
         if (await dbContext.Tags.AnyAsync(t => t.Name == tag.Name))
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext, StatusCodes.Status400BadRequest);
+            problem.Extensions.Add("details", $"Tag with the name {tag.Name} already exists");
             return BadRequest(problem);
         }
 
