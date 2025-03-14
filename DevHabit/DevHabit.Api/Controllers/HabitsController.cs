@@ -1,5 +1,6 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
+using DevHabit.Api.Entities;
 
 using FluentValidation;
 
@@ -14,10 +15,21 @@ namespace DevHabit.Api.Controllers;
 public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<HabitsCollectionDto>> GetHabits()
+    public async Task<ActionResult<HabitsCollectionDto>> GetHabits(string? search, HabitType? type, HabitStatus? status)
     {
-        List<HabitDto> habits = await dbContext
-            .Habits
+        var habitsQueryable = dbContext
+            .Habits;
+
+        search ??= search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+
+        habitsQueryable.Where(h => search == null || h.Name.Contains(search, StringComparison.InvariantCultureIgnoreCase)
+                                    || h.Description != null
+                                    && h.Description.Contains(search, StringComparison.InvariantCultureIgnoreCase))
+                        .Where(h => type == null || h.Type == type)
+                        .Where(h => status == null || h.Status == status);
+
+
+        List<HabitDto> habits = await habitsQueryable
             .Select(HabitQueries.ToDto())
             .ToListAsync();
 
