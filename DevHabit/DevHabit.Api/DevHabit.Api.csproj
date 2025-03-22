@@ -17,6 +17,7 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="System.Linq.Dynamic.Core" />
   </ItemGroup>
 
 </Project>
