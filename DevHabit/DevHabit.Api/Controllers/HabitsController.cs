@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
@@ -17,19 +19,22 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<HabitsCollectionDto>> GetHabits([FromQuery] QueryParameters query)
     {
-        var habitsQueryable = dbContext
-            .Habits;
-
         query.search ??= query.search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
 
-        habitsQueryable.Where(h => query.search == null || h.Name.Contains(query.search, StringComparison.InvariantCultureIgnoreCase)
-                                    || h.Description != null
-                                    && h.Description.Contains(query.search, StringComparison.InvariantCultureIgnoreCase))
-                        .Where(h => query.type == null || h.Type == query.type)
-                        .Where(h => query.status == null || h.Status == query.status);
+        Expression<Func<Habit, object>> orderBy = query.sort switch
+        {
+            "name" => h => h.Name,
+            "type" => h => h.Type,
+            _ => h => h.Id
+        };
 
-
-        List<HabitDto> habits = await habitsQueryable
+        var habits = await dbContext.Habits
+            .Where(h => query.search == null || h.Name.Contains(query.search, StringComparison.InvariantCultureIgnoreCase)
+                    || h.Description != null
+                    && h.Description.Contains(query.search, StringComparison.InvariantCultureIgnoreCase))
+            .Where(h => query.type == null || h.Type == query.type)
+            .Where(h => query.status == null || h.Status == query.status)
+            .OrderBy(orderBy)
             .Select(HabitQueries.ToDto())
             .ToListAsync();
 

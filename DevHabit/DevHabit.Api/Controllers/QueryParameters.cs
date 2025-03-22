@@ -10,6 +10,6 @@ public sealed record QueryParameters
     public string? search { get; set; }
     public HabitType? type { get; set; }
     public HabitStatus? status { get; set; }
-
+    public string? sort { get; set; }
 
 }

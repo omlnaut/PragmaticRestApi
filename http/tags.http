@@ -5,3 +5,8 @@ Content-Type: application/json
     "name": "NewTagi",
     "description": "This is an example tag description"
 }
+
+###
+
+GET http://localhost:5000/habits?sort=type
+Content-Type: application/json
