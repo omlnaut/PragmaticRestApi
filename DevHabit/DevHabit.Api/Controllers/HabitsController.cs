@@ -1,4 +1,4 @@
-using System.Linq.Expressions;
+using System.Linq.Dynamic.Core;
 
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
@@ -21,20 +21,13 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
     {
         query.search ??= query.search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
 
-        Expression<Func<Habit, object>> orderBy = query.sort switch
-        {
-            "name" => h => h.Name,
-            "type" => h => h.Type,
-            _ => h => h.Id
-        };
-
         var habits = await dbContext.Habits
             .Where(h => query.search == null || h.Name.Contains(query.search, StringComparison.InvariantCultureIgnoreCase)
                     || h.Description != null
                     && h.Description.Contains(query.search, StringComparison.InvariantCultureIgnoreCase))
             .Where(h => query.type == null || h.Type == query.type)
             .Where(h => query.status == null || h.Status == query.status)
-            .OrderBy(orderBy)
+            .OrderBy("Name ASC, Description DESC, Type ASC")
             .Select(HabitQueries.ToDto())
             .ToListAsync();
 
