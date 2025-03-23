@@ -1,9 +1,34 @@
 using DevHabit.Api.Entities;
+using DevHabit.Api.Services.Sorting;
 
 namespace DevHabit.Api.DTOs.Habits;
 
 internal static class HabitMappings
 {
+    public static readonly SortMappingDefinition<HabitDto, Habit> SortMapping = new()
+    {
+        Mappings =
+        [
+            new SortMapping(nameof(HabitDto.Name), nameof(Habit.Name)),
+            new SortMapping(nameof(HabitDto.Type), nameof(Habit.Type)),
+            new SortMapping(nameof(HabitDto.Description), nameof(Habit.Description)),
+            new SortMapping(nameof(HabitDto.Status), nameof(Habit.Status)),
+            new SortMapping(nameof(HabitDto.IsArchived), nameof(Habit.IsArchived)),
+            new SortMapping(nameof(HabitDto.EndDate), nameof(Habit.EndDate)),
+            new SortMapping(nameof(HabitDto.CreatedAtUtc), nameof(Habit.CreatedAtUtc)),
+            new SortMapping(nameof(HabitDto.UpdatedAtUtc), nameof(Habit.UpdatedAtUtc)),
+            new SortMapping(nameof(HabitDto.LastCompletedAt), nameof(Habit.LastCompletedAt)),
+            
+            // Frequency nested properties
+            new SortMapping($"{nameof(HabitDto.Frequency)}.{nameof(FrequencyDto.TimesPerPeriod)}", $"{nameof(Habit.Frequency)}.{nameof(Frequency.TimesPerPeriod)}"),
+            new SortMapping($"{nameof(HabitDto.Frequency)}.{nameof(FrequencyDto.Type)}", $"{nameof(Habit.Frequency)}.{nameof(Frequency.Type)}"),
+            
+            // Target nested properties
+            new SortMapping($"{nameof(HabitDto.Target)}.{nameof(TargetDto.Value)}", $"{nameof(Habit.Target)}.{nameof(Target.Value)}"),
+            new SortMapping($"{nameof(HabitDto.Target)}.{nameof(TargetDto.Unit)}", $"{nameof(Habit.Target)}.{nameof(Target.Unit)}"),
+        ]
+    };
+
     public static Habit ToEntity(this CreateHabitDto dto)
     {
         var habit = new Habit()
