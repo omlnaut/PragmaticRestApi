@@ -21,4 +21,21 @@ public sealed class SortMappingProvider(IEnumerable<ISortMappingDefinition> sort
 
         return sortMappingDefinition.Mappings;
     }
+
+    public bool ValidateMappings<TSource, TDestination>(string? sort)
+    {
+        if (string.IsNullOrWhiteSpace(sort))
+        {
+            return true;
+        }
+
+        var mappings = GetMappings<TSource, TDestination>();
+        var sortFields = sort.Split(",")
+                             .Select(s => s.Trim()
+                                           .Split(" ")[0])
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .ToList();
+
+        return sortFields.All(sf => mappings.Any(m => m.SortField.Equals(sf, StringComparison.OrdinalIgnoreCase)));
+    }
 }

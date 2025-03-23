@@ -29,7 +29,7 @@ internal static class QueryableExtensions
         {
             var (name, isDescending) = ParseSortField(sortField);
 
-            var mapping = mappings.First(m => m.SortField == name);
+            var mapping = mappings.First(m => m.SortField.Equals(name, StringComparison.OrdinalIgnoreCase));
 
             var direction = (mapping.Reverse, isDescending) switch
             {
@@ -39,7 +39,7 @@ internal static class QueryableExtensions
                 (false, false) => "asc",
             };
 
-            var fieldString = $"{name} {direction}";
+            var fieldString = $"{mapping.PropertyName} {direction}";
             orderByParts.Add(fieldString);
         }
 

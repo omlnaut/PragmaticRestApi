@@ -3,6 +3,7 @@ using System.Linq.Dynamic.Core;
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Services.Sorting;
 
 using FluentValidation;
 
@@ -17,9 +18,20 @@ namespace DevHabit.Api.Controllers;
 public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<HabitsCollectionDto>> GetHabits([FromQuery] QueryParameters query)
+    public async Task<ActionResult<HabitsCollectionDto>> GetHabits([FromQuery] QueryParameters query,
+                                                                   SortMappingProvider sortMappingProvider)
     {
         query.search ??= query.search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+
+        var sortMappings = sortMappingProvider.GetMappings<HabitDto, Habit>();
+
+        if (!sortMappingProvider.ValidateMappings<HabitDto, Habit>(query.sort))
+        {
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: $"The provided sort parameter is not valid: {query.sort}"
+            );
+        }
 
         var habits = await dbContext.Habits
             .Where(h => query.search == null || h.Name.Contains(query.search, StringComparison.InvariantCultureIgnoreCase)
@@ -27,7 +39,7 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
                     && h.Description.Contains(query.search, StringComparison.InvariantCultureIgnoreCase))
             .Where(h => query.type == null || h.Type == query.type)
             .Where(h => query.status == null || h.Status == query.status)
-            .OrderBy("Name ASC, Description DESC, Type ASC")
+            .ApplySort(query.sort, sortMappings)
             .Select(HabitQueries.ToDto())
             .ToListAsync();
 

@@ -8,5 +8,5 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5000/habits?sort=type
+GET http://localhost:5000/habits?sort=description asc, asdfasda
 Content-Type: application/json

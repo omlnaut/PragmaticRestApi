@@ -15,7 +15,6 @@ public sealed class HabitConfiguration : IEntityTypeConfiguration<Habit>
         builder.Property(h => h.Name).HasMaxLength(500);
         builder.Property(h => h.Description).HasMaxLength(500);
 
-        // later: what does ownsOne do here?
         builder.OwnsOne(h => h.Frequency);
 
         builder.OwnsOne(h => h.Target, t => t.Property(t => t.Unit).HasMaxLength(50));
