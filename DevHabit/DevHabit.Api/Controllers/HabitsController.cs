@@ -42,11 +42,7 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
             .ApplySort(query.sort, sortMappings)
             .Select(HabitQueries.ToDto());
 
-
-
-        var habits = await habitsQueryable.ToListAsync();
-
-        var paginationResult = new PaginationResult<HabitDto> { Items = habits };
+        var paginationResult = await PaginationResult<HabitDto>.CreateAsync(habitsQueryable, query.page, query.pageSize);
 
         return Ok(paginationResult);
     }
