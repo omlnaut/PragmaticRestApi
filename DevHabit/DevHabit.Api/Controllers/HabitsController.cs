@@ -37,6 +37,14 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
             );
         }
 
+        if (!dataShapingService.Validate<HabitDto>(query.fields))
+        {
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: $"The provided fields parameter is not valid: {query.fields}"
+            );
+        }
+
         var habitsQueryable = dbContext.Habits
             .Where(h => query.search == null || h.Name.Contains(query.search, StringComparison.InvariantCultureIgnoreCase)
                     || h.Description != null

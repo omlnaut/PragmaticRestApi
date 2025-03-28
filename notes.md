@@ -35,3 +35,9 @@
 - call in PaginationResult -> Items
 - make fields argument nullable in DataShapingService
 - return type of controller is now just ActionResult
+
+- unknown fields should produce 400 Bad Request
+- add Validate method to shaping service
+  - if empty: true
+  - assert that all entries of fieldsSet are in propertyInfos (compare by name, ordinalCaseIgnore)
+  - validate in controller -> return 400 Bad Request
