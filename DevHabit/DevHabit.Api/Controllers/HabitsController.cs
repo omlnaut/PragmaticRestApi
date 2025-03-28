@@ -18,7 +18,7 @@ namespace DevHabit.Api.Controllers;
 public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<HabitsCollectionDto>> GetHabits([FromQuery] QueryParameters query,
+    public async Task<ActionResult<PaginationResult<HabitDto>>> GetHabits([FromQuery] QueryParameters query,
                                                                    SortMappingProvider sortMappingProvider)
     {
         query.search ??= query.search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
@@ -33,19 +33,22 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
             );
         }
 
-        var habits = await dbContext.Habits
+        var habitsQueryable = dbContext.Habits
             .Where(h => query.search == null || h.Name.Contains(query.search, StringComparison.InvariantCultureIgnoreCase)
                     || h.Description != null
                     && h.Description.Contains(query.search, StringComparison.InvariantCultureIgnoreCase))
             .Where(h => query.type == null || h.Type == query.type)
             .Where(h => query.status == null || h.Status == query.status)
             .ApplySort(query.sort, sortMappings)
-            .Select(HabitQueries.ToDto())
-            .ToListAsync();
+            .Select(HabitQueries.ToDto());
 
-        var habitsDto = new HabitsCollectionDto { Data = habits };
 
-        return Ok(habitsDto);
+
+        var habits = await habitsQueryable.ToListAsync();
+
+        var paginationResult = new PaginationResult<HabitDto> { Items = habits };
+
+        return Ok(paginationResult);
     }
 
     [HttpGet("{id}")]

@@ -4,9 +4,14 @@ using DevHabit.Api.Entities;
 
 namespace DevHabit.Api.DTOs.Habits;
 
-public sealed record HabitsCollectionDto
+public interface ICollectionResponse<T>
 {
-    public required List<HabitDto> Data { get; init; }
+    public List<T> Items { get; init; }
+}
+
+public sealed record PaginationResult<T> : ICollectionResponse<T>
+{
+    public required List<T> Items { get; init; }
 }
 
 public sealed record HabitWithTagsDto
