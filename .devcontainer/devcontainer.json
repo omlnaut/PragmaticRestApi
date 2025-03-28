@@ -23,7 +23,8 @@
 		"vscode": {
 			"extensions": [
 				"ms-dotnettools.csdevkit",
-				"humao.rest-client"
+				"humao.rest-client",
+				"kreativ-software.csharpextensions"
 			]
 		}
 	}
