@@ -1,8 +1,11 @@
+using System.Dynamic;
 using System.Linq.Dynamic.Core;
 
 using DevHabit.Api.Database;
+using DevHabit.Api.DTOs.Common;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Services;
 using DevHabit.Api.Services.Sorting;
 
 using FluentValidation;
@@ -19,7 +22,8 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PaginationResult<HabitDto>>> GetHabits([FromQuery] QueryParameters query,
-                                                                   SortMappingProvider sortMappingProvider)
+                                                                   SortMappingProvider sortMappingProvider,
+                                                                   DataShapingService dataShapingService)
     {
         query.search ??= query.search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
 
@@ -48,9 +52,9 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 
         var totalCount = await habitsQueryable.CountAsync();
 
-        var paginationResult = new PaginationResult<HabitDto>
+        var paginationResult = new PaginationResult<ExpandoObject>
         {
-            Items = items,
+            Items = dataShapingService.ShapeData(items, query.fields),
             Page = query.page,
             PageSize = query.pageSize,
             TotalCount = totalCount
