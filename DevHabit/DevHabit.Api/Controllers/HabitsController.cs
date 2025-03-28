@@ -21,7 +21,7 @@ namespace DevHabit.Api.Controllers;
 public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<PaginationResult<HabitDto>>> GetHabits([FromQuery] QueryParameters query,
+    public async Task<ActionResult> GetHabits([FromQuery] QueryParameters query,
                                                                    SortMappingProvider sortMappingProvider,
                                                                    DataShapingService dataShapingService)
     {
