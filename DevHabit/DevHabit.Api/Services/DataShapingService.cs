@@ -11,6 +11,20 @@ public class DataShapingService
 
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> propertyInfoCache = new();
 
+    public ExpandoObject ShapeData<T>(T entity, string? fields)
+    {
+
+        var (_, propertyInfos) = ExtractFieldsAndPropertyInfo<T>(fields);
+
+        IDictionary<string, object?> shaped = new ExpandoObject();
+
+        foreach (var propertyInfo in propertyInfos)
+        {
+            shaped[propertyInfo.Name] = propertyInfo.GetValue(entity);
+        }
+
+        return (ExpandoObject)shaped;
+    }
     public List<ExpandoObject> ShapeData<T>(List<T> entities, string? fields)
     {
 

@@ -40,4 +40,12 @@
 - add Validate method to shaping service
   - if empty: true
   - assert that all entries of fieldsSet are in propertyInfos (compare by name, ordinalCaseIgnore)
-  - validate in controller -> return 400 Bad Request
+  - validate in controller -> return 400 Bad Requesto
+
+  Serialization
+  - In NewtonSoft using, options.SerializerSettings.ContractResolver -> CamelCasePropertyNamesj
+
+  Now for a single Habit
+  - add fields as arguent for endpoint
+  - validate fields
+  - ShapeData only takes collection -> add support for shaping a single item
