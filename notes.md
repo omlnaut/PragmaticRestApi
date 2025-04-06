@@ -49,3 +49,18 @@
   - add fields as arguent for endpoint
   - validate fields
   - ShapeData only takes collection -> add support for shaping a single item
+
+  # Refactoring before HATEOAS
+  - program.cs is getting hard to read
+  - remove all weatherforecast stuff
+  - dependencyInjection class as collector for registration stuff
+    - AddControllers
+      - normal controller registration
+      - openapi/swagger
+    - ProblemDetails/ExceptionHandler
+    - AddDatabase
+    - AddObervability
+    - AddApplicatinServices
+      - VAlidator
+      - Services
+      - ...
