@@ -8,6 +8,7 @@ using DevHabit.Api.Services.Sorting;
 using FluentValidation;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 using Newtonsoft.Json.Serialization;
 
@@ -22,7 +23,7 @@ using OpenTelemetry.Trace;
 
 namespace DevHabit.Api.Extensions;
 
-public static class DependencyInjection
+public static class DependencyInjectionExtensions
 {
     public static WebApplicationBuilder AddControllers(this WebApplicationBuilder builder)
     {
@@ -35,6 +36,7 @@ public static class DependencyInjection
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddHttpContextAccessor();
 
         return builder;
     }
@@ -88,6 +90,8 @@ public static class DependencyInjection
 
         builder.Services.AddTransient<SortMappingProvider>();
         builder.Services.AddTransient<DataShapingService>();
+        builder.Services.AddTransient<LinkService>();
+
         return builder;
     }
 

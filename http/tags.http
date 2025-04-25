@@ -16,3 +16,5 @@ GET http://localhost:5000/habits/h_c6b69c6e-9729-4b3c-8d4b-084ce4576a0c?fields=I
 Content-Type: application/json
 
 ###
+GET http://localhost:5000/habits/h_c6b69c6e-9729-4b3c-8d4b-084ce4576a0c
+Content-Type: application/json

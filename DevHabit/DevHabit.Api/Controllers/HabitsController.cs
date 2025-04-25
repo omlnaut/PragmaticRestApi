@@ -18,7 +18,7 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [Route("habits")]
-public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
+public class HabitsController(ApplicationDbContext dbContext, LinkService linkService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult> GetHabits([FromQuery] QueryParameters query,
@@ -73,8 +73,8 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
 
     [HttpGet("{id}")]
     public async Task<ActionResult> GetHabitById(string id,
-                                                                   string? fields,
-                                                                   DataShapingService dataShapingService)
+                                                 string? fields,
+                                                 DataShapingService dataShapingService)
     {
         if (!dataShapingService.Validate<HabitWithTagsDto>(fields))
         {
@@ -94,6 +94,12 @@ public class HabitsController(ApplicationDbContext dbContext) : ControllerBase
         }
 
         var shaped = dataShapingService.ShapeData(habit, fields);
+        var links = new List<LinkDto>()
+        {
+            linkService.CreateLink(nameof(GetHabitById), "self", HttpMethods.Get, new{id})
+
+        };
+        shaped.TryAdd("link", links);
 
         return Ok(shaped);
     }
