@@ -50,7 +50,8 @@
   - validate fields
   - ShapeData only takes collection -> add support for shaping a single item
 
-  # Refactoring before HATEOAS
+# HATEOAS
+## Refactoring before HATEOAS
   - program.cs is getting hard to read
   - remove all weatherforecast stuff
   - dependencyInjection class as collector for registration stuff
@@ -64,3 +65,22 @@
       - VAlidator
       - Services
       - ...
+
+## Implement HATEOAS
+- Begin with GetHabit endpoint
+- Represent Single Link
+  - new Dto (LinkDto)
+    - Href
+    - Rel
+    - Method
+  - Use LinkGenerator for building ressource links
+    - GetUriByAction(Context, nameof(Method))
+  - LinkService for constructing LinkDtos
+    - endpointName, rel, method, object? values, string? controller
+    - href by linkGenerator
+    - return dto with href and other values
+    - register with DI (transient)
+  - TryAdd "link" property on expandoObject
+    - array of LinkDto
+    - example: (nameof(GetHabit), "self", Get, new{id})
+    - continue at 7:16
