@@ -1,3 +1,4 @@
+using DevHabit.Api.DTOs.Common;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Services.Sorting;
 
@@ -62,7 +63,7 @@ internal static class HabitMappings
     }
 
 
-    public static HabitDto ToDto(this Habit habit)
+    public static HabitDto ToDto(this Habit habit, List<LinkDto> links)
     {
         var dto = new HabitDto
         {
@@ -90,7 +91,8 @@ internal static class HabitMappings
             },
             CreatedAtUtc = habit.CreatedAtUtc,
             UpdatedAtUtc = habit.UpdatedAtUtc,
-            LastCompletedAt = habit.LastCompletedAt
+            LastCompletedAt = habit.LastCompletedAt,
+            Links = links
         };
 
         return dto;

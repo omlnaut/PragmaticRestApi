@@ -94,16 +94,23 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
         }
 
         var shaped = dataShapingService.ShapeData(habit, fields);
-        var links = new List<LinkDto>()
-        {
-            linkService.CreateLink(nameof(GetHabitById), "self", HttpMethods.Get, new{id}),
-            linkService.CreateLink(nameof(GetHabitById), "upsert", HttpMethods.Put, new{id}),
-
-        };
+        List<LinkDto> links = CreateLinksForHabit(id, fields);
         shaped.TryAdd("link", links);
 
         return Ok(shaped);
     }
+
+    private List<LinkDto> CreateLinksForHabit(string id, string? fields)
+    {
+        return
+        [
+            linkService.CreateLink(nameof(GetHabitById), "self", HttpMethods.Get, new{id, fields}),
+            linkService.CreateLink(nameof(UpdateHabit), "upsert", HttpMethods.Put, new{id}),
+            linkService.CreateLink(nameof(DeleteHabit), "delete", HttpMethods.Delete, new{id}),
+
+        ];
+    }
+
 
     [HttpPost]
     public async Task<ActionResult<HabitDto>> CreateHabit(CreateHabitDto createHabitDto, IValidator<CreateHabitDto> validator)
@@ -116,7 +123,8 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
 
         await dbContext.SaveChangesAsync();
 
-        var dto = habit.ToDto();
+        var links = CreateLinksForHabit(habit.Id, null);
+        var dto = habit.ToDto(links);
 
         return CreatedAtAction(nameof(GetHabitById), new { id = dto.Id }, dto);
     }
@@ -148,7 +156,8 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
             return NotFound();
         }
 
-        var habitDto = habit.ToDto();
+        var links = CreateLinksForHabit(habit.Id, null);
+        var habitDto = habit.ToDto(links);
         patchDocument.ApplyTo(habitDto);
 
         if (!TryValidateModel(habitDto))
