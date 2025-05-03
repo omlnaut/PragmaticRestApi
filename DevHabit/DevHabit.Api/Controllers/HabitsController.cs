@@ -96,7 +96,8 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
         var shaped = dataShapingService.ShapeData(habit, fields);
         var links = new List<LinkDto>()
         {
-            linkService.CreateLink(nameof(GetHabitById), "self", HttpMethods.Get, new{id})
+            linkService.CreateLink(nameof(GetHabitById), "self", HttpMethods.Get, new{id}),
+            linkService.CreateLink(nameof(GetHabitById), "upsert", HttpMethods.Put, new{id}),
 
         };
         shaped.TryAdd("link", links);
