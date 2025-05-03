@@ -84,3 +84,9 @@
     - array of LinkDto
     - example: (nameof(GetHabit), "self", Get, new{id})
     - continue at 7:16
+    from 7:16 add more links: update, partial-update, delete
+  - Bug: Data shaping is not part of the self-ref link
+    -> add fields to values in link generator (why does this work?)
+  - Refactor: CreateLinksForHabit(id, fields?)
+    - I.e. CreateHabit endpoint. Add List links to HabitDto
+  - Continue at 15:30 for collection ressources
