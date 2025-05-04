@@ -67,6 +67,7 @@
       - ...
 
 ## Implement HATEOAS
+### Single Resource
 - Begin with GetHabit endpoint
 - Represent Single Link
   - new Dto (LinkDto)
@@ -90,3 +91,29 @@
   - Refactor: CreateLinksForHabit(id, fields?)
     - I.e. CreateHabit endpoint. Add List links to HabitDto
   - Continue at 15:30 for collection ressources
+  ### Collection Resource
+  
+  - Link generation challenges
+    - Depends on the presence of the id, which might not be present after data shaping
+    - ShapeCollectionData needs optional argument for List<LinkDto> generating function
+    - When iterating over found entities: add links to each item
+    - Add links in PaginationResult->Items
+  
+  - Structure for collection links
+    - Links on the paginationResult itself using same Links property
+    - Interface for ILinksResponse for Items Property
+    - Method similar to CreateLinksForHabit -> CreateLinksForHabits
+      - Self link to GetHabits
+      - Arguments: HabitsQueryParameters (page, pageSize, fields, search, sort, type, status)
+      - Pay attention to values names (q instead of search)
+    
+  - Additional link types
+    - Link: create
+    - Page navigation links: 
+      - Add parameters to CreateLinksForHabits(hasNext, hasPrevious)
+      - If true, add next-page, previous-page link to next/previous page
+    - Cross-resource links:
+      - Link: upsert-tags from UpsertHabitTags in HabitTagsController
+      - Note that id is called habitId here (as defined in the controller endpoint)
+      - Needs name of controller - NameOf doesn't work because we need "HabitTags" without "Controller"
+      - Add string propertyName to controller
