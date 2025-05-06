@@ -22,3 +22,7 @@ Content-Type: application/json
 ###
 GET http://localhost:5000/habits
 Content-Type: application/json
+
+###
+POST http://localhost:5000/seed
+Content-Type: application/json
