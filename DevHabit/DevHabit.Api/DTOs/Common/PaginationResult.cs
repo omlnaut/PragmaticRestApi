@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace DevHabit.Api.DTOs.Common;
 
-public sealed record PaginationResult<T> : ICollectionResponse<T>
+public sealed record PaginationResult<T> : ICollectionResponse<T>, ILinksResponse
 {
     public required List<T> Items { get; init; }
     public int Page { get; init; }
@@ -12,20 +10,5 @@ public sealed record PaginationResult<T> : ICollectionResponse<T>
     public bool HasPreviousPage => Page > 1;
     public bool HasNextPage => Page < TotalPages;
 
-    public static async Task<PaginationResult<T>> CreateAsync(IQueryable<T> query, int page, int pagesize)
-    {
-        var items = await query.Skip((page - 1) * pagesize)
-                               .Take(pagesize)
-                               .ToListAsync();
-
-        var totalCount = await query.CountAsync();
-
-        return new PaginationResult<T>
-        {
-            Items = items,
-            Page = page,
-            PageSize = pagesize,
-            TotalCount = totalCount
-        };
-    }
+    public required List<LinkDto> Links { get; init; }
 }

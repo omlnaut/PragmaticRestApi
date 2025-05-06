@@ -107,6 +107,7 @@
       - Arguments: HabitsQueryParameters (page, pageSize, fields, search, sort, type, status)
       - Pay attention to values names (q instead of search)
     
+  continue here
   - Additional link types
     - Link: create
     - Page navigation links: 

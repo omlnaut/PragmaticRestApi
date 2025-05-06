@@ -23,7 +23,7 @@ public sealed record HabitWithTagsDto
     public required List<string> Tags { get; init; }
 
 }
-public sealed record HabitDto
+public sealed record HabitDto : ILinksResponse
 {
     public required string Id { get; init; }
     public required string Name { get; init; }

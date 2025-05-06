@@ -65,7 +65,8 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
             Items = dataShapingService.ShapeData(items, query.fields, habitDto => CreateLinksForHabit(habitDto.Id, query.fields)),
             Page = query.page,
             PageSize = query.pageSize,
-            TotalCount = totalCount
+            TotalCount = totalCount,
+            Links = CreateLinksForHabits(query)
         };
 
         return Ok(paginationResult);
@@ -111,6 +112,19 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
         ];
     }
 
+    private List<LinkDto> CreateLinksForHabits(QueryParameters query)
+    {
+        return
+        [
+            linkService.CreateLink(nameof(GetHabits), "self", HttpMethods.Get, new{ query.page,
+                 query.pageSize,
+                 query.fields,
+                q = query.search,
+                 query.type,
+                 query.status,
+            }),
+        ];
+    }
 
     [HttpPost]
     public async Task<ActionResult<HabitDto>> CreateHabit(CreateHabitDto createHabitDto, IValidator<CreateHabitDto> validator)
