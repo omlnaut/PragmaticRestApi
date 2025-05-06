@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using System.Dynamic;
 using System.Reflection;
 
+using DevHabit.Api.DTOs.Common;
+
 namespace DevHabit.Api.Services;
 #pragma warning disable S2325 // Methods and properties that don't access instance data should be static
 #pragma warning disable CA1822 // Mark members as static
@@ -25,7 +27,10 @@ public class DataShapingService
 
         return (ExpandoObject)shaped;
     }
-    public List<ExpandoObject> ShapeData<T>(List<T> entities, string? fields)
+    public List<ExpandoObject> ShapeData<T>(
+        List<T> entities,
+        string? fields,
+        Func<T, List<LinkDto>>? linkFactory = null)
     {
 
         var (_, propertyInfos) = ExtractFieldsAndPropertyInfo<T>(fields);
@@ -40,6 +45,10 @@ public class DataShapingService
             foreach (var propertyInfo in propertyInfos)
             {
                 shaped[propertyInfo.Name] = propertyInfo.GetValue(entity);
+            }
+            if (linkFactory != null)
+            {
+                shaped["Links"] = linkFactory(entity);
             }
 
             shapedObjects.Add((ExpandoObject)shaped);

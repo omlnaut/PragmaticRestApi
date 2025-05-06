@@ -62,7 +62,7 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
 
         var paginationResult = new PaginationResult<ExpandoObject>
         {
-            Items = dataShapingService.ShapeData(items, query.fields),
+            Items = dataShapingService.ShapeData(items, query.fields, habitDto => CreateLinksForHabit(habitDto.Id, query.fields)),
             Page = query.page,
             PageSize = query.pageSize,
             TotalCount = totalCount

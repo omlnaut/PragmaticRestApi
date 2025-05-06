@@ -1,12 +1,14 @@
 using System.Linq.Expressions;
 
+using DevHabit.Api.DTOs.Common;
+
 using DevHabit.Api.Entities;
 
 namespace DevHabit.Api.DTOs.Habits;
 
 internal static class HabitQueries
 {
-    public static Expression<Func<Habit, HabitDto>> ToDto()
+    public static Expression<Func<Habit, HabitDto>> ToDto(List<LinkDto>? links = null)
     {
         return habit => new HabitDto
         {
@@ -34,7 +36,8 @@ internal static class HabitQueries
             },
             CreatedAtUtc = habit.CreatedAtUtc,
             UpdatedAtUtc = habit.UpdatedAtUtc,
-            LastCompletedAt = habit.LastCompletedAt
+            LastCompletedAt = habit.LastCompletedAt,
+            Links = links ?? new List<LinkDto>(),
         };
     }
     public static Expression<Func<Habit, HabitWithTagsDto>> ToHabitsWithTagsDto()
