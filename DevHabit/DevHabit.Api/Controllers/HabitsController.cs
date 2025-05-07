@@ -108,7 +108,12 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
             linkService.CreateLink(nameof(GetHabitById), "self", HttpMethods.Get, new{id, fields}),
             linkService.CreateLink(nameof(UpdateHabit), "upsert", HttpMethods.Put, new{id}),
             linkService.CreateLink(nameof(DeleteHabit), "delete", HttpMethods.Delete, new{id}),
-
+            linkService.CreateLink(
+                nameof(HabitTagsController.UpsertHabitTags),
+                "upsert-tags",
+                HttpMethods.Put,
+                new{ habitId=id },
+                HabitTagsController.Name),
         ];
     }
 

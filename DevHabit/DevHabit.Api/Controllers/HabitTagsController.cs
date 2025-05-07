@@ -1,6 +1,8 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.Entities;
 
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,7 @@ namespace DevHabit.Api.Controllers;
 [Route("habits/{habitId}/tags")]
 public sealed class HabitTagsController(ApplicationDbContext dbContext) : ControllerBase
 {
+    public static readonly string Name = nameof(HabitTagsController).Replace("Controller", string.Empty, StringComparison.InvariantCulture);
 
     [HttpPut]
     public async Task<IActionResult> UpsertHabitTags(string habitId, UpsertHabitDto upsertHabitDto)
