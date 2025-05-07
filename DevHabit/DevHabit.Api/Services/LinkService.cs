@@ -7,7 +7,7 @@ public class LinkService(LinkGenerator linkGenerator, IHttpContextAccessor httpC
     public LinkDto CreateLink(string endpointName,
                               string rel,
                               string method,
-                              object? values,
+                              object? values = null,
                               string? controller = null)
     {
         var href = linkGenerator.GetUriByAction(httpContextAccessor.HttpContext!, action: endpointName, controller: controller, values: values);

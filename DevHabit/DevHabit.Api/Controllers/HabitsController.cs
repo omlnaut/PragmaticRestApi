@@ -123,6 +123,7 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
                  query.type,
                  query.status,
             }),
+            linkService.CreateLink(nameof(GetHabits), "create", HttpMethods.Post)
         ];
     }
 
