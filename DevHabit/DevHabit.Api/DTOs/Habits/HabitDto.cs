@@ -38,7 +38,7 @@ public sealed record HabitDto : ILinksResponse
     public required DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; init; }
     public DateTime? LastCompletedAt { get; init; }
-    public required List<LinkDto> Links { get; init; }
+    public required List<LinkDto> Links { get; set; }
 
 
 

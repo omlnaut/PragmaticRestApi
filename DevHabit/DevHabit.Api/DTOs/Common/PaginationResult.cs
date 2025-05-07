@@ -10,5 +10,5 @@ public sealed record PaginationResult<T> : ICollectionResponse<T>, ILinksRespons
     public bool HasPreviousPage => Page > 1;
     public bool HasNextPage => Page < TotalPages;
 
-    public required List<LinkDto> Links { get; init; }
+    public List<LinkDto> Links { get; set; } = [];
 }

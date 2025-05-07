@@ -66,8 +66,8 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
             Page = query.page,
             PageSize = query.pageSize,
             TotalCount = totalCount,
-            Links = CreateLinksForHabits(query)
         };
+        paginationResult.Links = CreateLinksForHabits(query, paginationResult.HasNextPage, paginationResult.HasPreviousPage);
 
         return Ok(paginationResult);
     }
@@ -112,11 +112,13 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
         ];
     }
 
-    private List<LinkDto> CreateLinksForHabits(QueryParameters query)
+    private List<LinkDto> CreateLinksForHabits(QueryParameters query, bool hasNextPage, bool hasPreviousPage)
     {
-        return
-        [
-            linkService.CreateLink(nameof(GetHabits), "self", HttpMethods.Get, new{ query.page,
+        var links = new List<LinkDto>
+        {
+            linkService.CreateLink(nameof(GetHabits), "self", HttpMethods.Get,
+            new {
+                query.page,
                  query.pageSize,
                  query.fields,
                 q = query.search,
@@ -124,7 +126,40 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
                  query.status,
             }),
             linkService.CreateLink(nameof(GetHabits), "create", HttpMethods.Post)
-        ];
+        };
+
+        if (hasNextPage)
+        {
+            links.Add(
+                linkService.CreateLink(nameof(GetHabits), "next-page", HttpMethods.Get,
+                new
+                {
+                    page = query.page + 1,
+                    query.pageSize,
+                    query.fields,
+                    q = query.search,
+                    query.type,
+                    query.status,
+                })
+            );
+        }
+        if (hasPreviousPage)
+        {
+            links.Add(
+                linkService.CreateLink(nameof(GetHabits), "previous-page", HttpMethods.Get,
+                new
+                {
+                    page = query.page - 1,
+                    query.pageSize,
+                    query.fields,
+                    q = query.search,
+                    query.type,
+                    query.status,
+                })
+            );
+        }
+
+        return links;
     }
 
     [HttpPost]
