@@ -118,3 +118,24 @@
       - Note that id is called habitId here (as defined in the controller endpoint)
       - Needs name of controller - NameOf doesn't work because we need "HabitTags" without "Controller"
       - Add string propertyName to controller
+
+## Content negotiation
+- Use custom media type to describe content more precise
+- Application should return content based on the "accepted" media type in the request header (=server side content negotiation)
+- Configure output formatters:
+  ```
+  builder.Services.Configure(o => {options.OutputFormatters.OfType().First()
+  ```
+- Formatter support for custom media types:
+  ```
+  formatter.SupportedMediaType(application/vnd.dev-habit.hateoas+json)
+  ```
+  - vnd -> vendor
+- Create CustomMediaTypeNames static class for media types
+- Add nested "Application" static class
+- Only include links if accept header is custom type:
+  ```
+  [FromHeader(Name=Accept)] string? accept
+  ```
+- Or add to HabitsQueryParameters (fromHeader works too)
+- Use [Produces(mediatypes...)] on endpoint instead of global config
