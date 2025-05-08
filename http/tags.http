@@ -12,6 +12,11 @@ GET http://localhost:5000/habits?sort=description asc&pageSize=2&fields=Name, De
 Content-Type: application/json
 
 ###
+GET http://localhost:5000/habits?sort=description asc&pageSize=2&fields=Name, DescRiptIon
+Accept: application/vnd.dev-habit.hateoas+json
+
+
+###
 GET http://localhost:5000/habits/h_c6b69c6e-9729-4b3c-8d4b-084ce4576a0c?fields=Id,Name, DescRiptIon
 Content-Type: application/json
 
