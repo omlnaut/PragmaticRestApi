@@ -7,7 +7,7 @@ namespace DevHabit.Api.Services;
 
 public static class CustomMediaTypeNames
 {
-    public static class Application
+    public static class App
     {
         public const string Hateoas = "application/vnd.dev-habit.hateoas+json";
     }

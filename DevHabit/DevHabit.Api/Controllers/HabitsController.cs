@@ -1,5 +1,6 @@
 using System.Dynamic;
 using System.Linq.Dynamic.Core;
+using System.Net.Mime;
 
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Common;
@@ -21,6 +22,7 @@ namespace DevHabit.Api.Controllers;
 public class HabitsController(ApplicationDbContext dbContext, LinkService linkService) : ControllerBase
 {
     [HttpGet]
+    [Produces(MediaTypeNames.Application.Json, CustomMediaTypeNames.App.Hateoas)]
     public async Task<ActionResult> GetHabits([FromQuery] QueryParameters query,
                                                                    SortMappingProvider sortMappingProvider,
                                                                    DataShapingService dataShapingService)
@@ -60,14 +62,23 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
 
         var totalCount = await habitsQueryable.CountAsync();
 
+        var includeLinks = query.Accept == CustomMediaTypeNames.App.Hateoas;
+
+        var paginationItems = includeLinks
+            ? dataShapingService.ShapeData(items, query.fields, habitDto => CreateLinksForHabit(habitDto.Id, query.fields))
+            : dataShapingService.ShapeData(items, query.fields, linkFactory: null);
+
         var paginationResult = new PaginationResult<ExpandoObject>
         {
-            Items = dataShapingService.ShapeData(items, query.fields, habitDto => CreateLinksForHabit(habitDto.Id, query.fields)),
+            Items = paginationItems,
             Page = query.page,
             PageSize = query.pageSize,
             TotalCount = totalCount,
         };
-        paginationResult.Links = CreateLinksForHabits(query, paginationResult.HasNextPage, paginationResult.HasPreviousPage);
+        if (includeLinks)
+        {
+            paginationResult.Links = CreateLinksForHabits(query, paginationResult.HasNextPage, paginationResult.HasPreviousPage);
+        }
 
         return Ok(paginationResult);
     }

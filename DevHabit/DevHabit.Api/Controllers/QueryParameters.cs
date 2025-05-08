@@ -15,4 +15,7 @@ public sealed record QueryParameters
 
     public int page { get; set; } = 1;
     public int pageSize { get; set; } = 10;
+
+    [FromHeader(Name = "Accept")]
+    public string? Accept { get; init; }
 }
