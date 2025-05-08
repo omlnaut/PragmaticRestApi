@@ -7,6 +7,9 @@ using DevHabit.Api.Services.Sorting;
 
 using FluentValidation;
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -33,6 +36,12 @@ public static class DependencyInjectionExtensions
         })
         .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver())
         .AddXmlSerializerFormatters();
+
+        builder.Services.Configure<MvcOptions>(options =>
+        {
+            var formatter = options.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>().First();
+            formatter.SupportedMediaTypes.Add(CustomMediaTypeNames.Application.Hateoas);
+        });
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
