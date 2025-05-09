@@ -26,7 +26,7 @@ namespace DevHabit.Api.Controllers;
 public class HabitsController(ApplicationDbContext dbContext, LinkService linkService) : ControllerBase
 {
     [HttpGet]
-    [Produces(MediaTypeNames.Application.Json, CustomMediaTypeNames.App.Hateoas)]
+    [Produces(MediaTypeNames.Application.Json, CustomMediaTypeNames.App.HateoasV1)]
     public async Task<ActionResult> GetHabits([FromQuery] QueryParameters query,
                                                                    SortMappingProvider sortMappingProvider,
                                                                    DataShapingService dataShapingService)
@@ -66,7 +66,7 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
 
         var totalCount = await habitsQueryable.CountAsync();
 
-        var includeLinks = query.Accept == CustomMediaTypeNames.App.Hateoas;
+        var includeLinks = query.Accept == CustomMediaTypeNames.App.HateoasV1;
 
         var paginationItems = includeLinks
             ? dataShapingService.ShapeData(items, query.fields, habitDto => CreateLinksForHabit(habitDto.Id, query.fields))
