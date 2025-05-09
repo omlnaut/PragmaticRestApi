@@ -9,6 +9,9 @@ using DevHabit.Api.Services.Sorting;
 
 using FluentValidation;
 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -39,6 +42,12 @@ public static class DependencyInjectionExtensions
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddHttpContextAccessor();
+
+        builder.Services.Configure<MvcOptions>(options =>
+        {
+            var formatter = options.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>().First();
+            formatter.SupportedMediaTypes.Add(CustomMediaTypeNames.App.HateoasV1);
+        });
         builder.Services
             .AddApiVersioning(o =>
                 {
@@ -46,7 +55,10 @@ public static class DependencyInjectionExtensions
                     o.AssumeDefaultVersionWhenUnspecified = true;
                     o.ReportApiVersions = true;
                     o.ApiVersionSelector = new CurrentImplementationApiVersionSelector(o);
-                    o.ApiVersionReader = new UrlSegmentApiVersionReader();
+                    o.ApiVersionReader = ApiVersionReader.Combine(
+                        new UrlSegmentApiVersionReader(),
+                        new MediaTypeApiVersionReaderBuilder().Template("application/vnd.deb-habit.hateoas.{version}+json")
+                                                              .Build());
                 })
             .AddMvc();
 
