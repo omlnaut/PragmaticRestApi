@@ -1,3 +1,5 @@
+using Asp.Versioning;
+
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
@@ -6,9 +8,6 @@ using DevHabit.Api.Services;
 using DevHabit.Api.Services.Sorting;
 
 using FluentValidation;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -28,7 +27,7 @@ namespace DevHabit.Api.Extensions;
 
 public static class DependencyInjectionExtensions
 {
-    public static WebApplicationBuilder AddControllers(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddApiServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddControllers(options =>
         {
@@ -40,6 +39,16 @@ public static class DependencyInjectionExtensions
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddHttpContextAccessor();
+        builder.Services
+            .AddApiVersioning(o =>
+                {
+                    o.DefaultApiVersion = new ApiVersion(1.0);
+                    o.AssumeDefaultVersionWhenUnspecified = true;
+                    o.ReportApiVersions = true;
+                    o.ApiVersionSelector = new CurrentImplementationApiVersionSelector(o);
+                    o.ApiVersionReader = new UrlSegmentApiVersionReader();
+                })
+            .AddMvc();
 
         return builder;
     }

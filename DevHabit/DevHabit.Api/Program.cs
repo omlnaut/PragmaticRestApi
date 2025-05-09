@@ -2,7 +2,7 @@ using DevHabit.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddControllers()
+builder.AddApiServices()
        .AddExceptionHandling()
        .AddObservability()
        .AddApplicationServices()

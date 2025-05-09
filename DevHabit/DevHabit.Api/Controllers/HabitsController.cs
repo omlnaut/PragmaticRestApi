@@ -2,6 +2,8 @@ using System.Dynamic;
 using System.Linq.Dynamic.Core;
 using System.Net.Mime;
 
+using Asp.Versioning;
+
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Common;
 using DevHabit.Api.DTOs.Habits;
@@ -18,7 +20,9 @@ using Microsoft.EntityFrameworkCore;
 namespace DevHabit.Api.Controllers;
 
 [ApiController]
-[Route("habits")]
+[ApiVersion(1.0)]
+[ApiVersion(2.0)]
+[Route("v{version:apiVersion}/habits")]
 public class HabitsController(ApplicationDbContext dbContext, LinkService linkService) : ControllerBase
 {
     [HttpGet]
@@ -84,6 +88,7 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
     }
 
     [HttpGet("{id}")]
+    [MapToApiVersion(1.0)]
     public async Task<ActionResult> GetHabitById(string id,
                                                  string? fields,
                                                  DataShapingService dataShapingService)
@@ -98,6 +103,36 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
 
         var habit = await dbContext.Habits
             .Select(HabitQueries.ToHabitsWithTagsDto())
+            .FirstOrDefaultAsync(h => h.Id == id);
+
+        if (habit is null)
+        {
+            return NotFound();
+        }
+
+        var shaped = dataShapingService.ShapeData(habit, fields);
+        List<LinkDto> links = CreateLinksForHabit(id, fields);
+        shaped.TryAdd("link", links);
+
+        return Ok(shaped);
+    }
+
+    [HttpGet("{id}")]
+    [MapToApiVersion(2.0)]
+    public async Task<ActionResult> GetHabitByIdV2(string id,
+                                                 string? fields,
+                                                 DataShapingService dataShapingService)
+    {
+        if (!dataShapingService.Validate<HabitWithTagsDtoV2>(fields))
+        {
+            return Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: $"The provided fields parameter is not valid: {fields}"
+            );
+        }
+
+        var habit = await dbContext.Habits
+            .Select(HabitQueries.ToHabitsWithTagsDtoV2())
             .FirstOrDefaultAsync(h => h.Id == id);
 
         if (habit is null)
