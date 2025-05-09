@@ -12,16 +12,16 @@ GET http://localhost:5000/v1/habits?sort=description asc&pageSize=2&fields=Name,
 Content-Type: application/json
 
 ###
-GET http://localhost:5000/v1/habits?sort=description asc&pageSize=2&fields=Name, DescRiptIon
-Accept: application/vnd.dev-habit.hateoas+json
+GET http://localhost:5000/habits?sort=description asc&pageSize=2&fields=Name, DescRiptIon
+Accept: application/vnd.dev-habit.hateoas.1+json
 
 ###
-GET http://localhost:5000/v1/habits/h_7efee871-b1fe-444f-b145-b88aa30c625d?fields=Name,%20DescRiptIon, Id, CreatedAtUtc, UpdatedAtUtc
-Accept: application/json
+GET http://localhost:5000/habits/h_7efee871-b1fe-444f-b145-b88aa30c625d?fields=Name,%20DescRiptIon, Id, CreatedAtUtc, UpdatedAtUtc
+Accept: application/vnd.dev-habit.hateoas.1+json
 
 ###
-GET http://localhost:5000/v2/habits/h_7efee871-b1fe-444f-b145-b88aa30c625d?fields=Name,%20DescRiptIon, Id, CreatedAt, UpdatedAt
-Accept: application/json
+GET http://localhost:5000/habits/h_7efee871-b1fe-444f-b145-b88aa30c625d?fields=Name,%20DescRiptIon, Id, CreatedAt, UpdatedAt
+Accept: application/vnd.dev-habit.hateoas.2+json
 
 ###
 GET http://localhost:5000/habits/h_c6b69c6e-9729-4b3c-8d4b-084ce4576a0c?fields=Id,Name, DescRiptIon

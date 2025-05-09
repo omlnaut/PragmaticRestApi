@@ -47,6 +47,9 @@ public static class DependencyInjectionExtensions
         {
             var formatter = options.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>().First();
             formatter.SupportedMediaTypes.Add(CustomMediaTypeNames.App.HateoasV1);
+            formatter.SupportedMediaTypes.Add(CustomMediaTypeNames.App.HateoasV2);
+            formatter.SupportedMediaTypes.Add(CustomMediaTypeNames.App.JsonV1);
+            formatter.SupportedMediaTypes.Add(CustomMediaTypeNames.App.JsonV2);
         });
         builder.Services
             .AddApiVersioning(o =>
@@ -57,7 +60,7 @@ public static class DependencyInjectionExtensions
                     o.ApiVersionSelector = new CurrentImplementationApiVersionSelector(o);
                     o.ApiVersionReader = ApiVersionReader.Combine(
                         new UrlSegmentApiVersionReader(),
-                        new MediaTypeApiVersionReaderBuilder().Template("application/vnd.deb-habit.hateoas.{version}+json")
+                        new MediaTypeApiVersionReaderBuilder().Template("application/vnd.dev-habit.hateoas.{version}+json")
                                                               .Build());
                 })
             .AddMvc();

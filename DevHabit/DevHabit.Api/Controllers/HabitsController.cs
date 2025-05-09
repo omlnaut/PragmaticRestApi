@@ -21,8 +21,7 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [ApiVersion(1.0)]
-[ApiVersion(2.0)]
-[Route("v{version:apiVersion}/habits")]
+[Route("/habits")]
 public class HabitsController(ApplicationDbContext dbContext, LinkService linkService) : ControllerBase
 {
     [HttpGet]
@@ -88,7 +87,7 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
     }
 
     [HttpGet("{id}")]
-    [MapToApiVersion(1.0)]
+    [ApiVersion(1.0)]
     public async Task<ActionResult> GetHabitById(string id,
                                                  string? fields,
                                                  DataShapingService dataShapingService)
@@ -118,7 +117,7 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
     }
 
     [HttpGet("{id}")]
-    [MapToApiVersion(2.0)]
+    [ApiVersion(2.0)]
     public async Task<ActionResult> GetHabitByIdV2(string id,
                                                  string? fields,
                                                  DataShapingService dataShapingService)
