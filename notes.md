@@ -139,3 +139,27 @@
   ```
 - Or add to HabitsQueryParameters (fromHeader works too)
 - Use [Produces(mediatypes...)] on endpoint instead of global config
+
+## API versioning
+- Example: Renaming fields in HabitWithTagsDto
+  - Create v2 dto with updated names (remove utc)
+  - Update ProjectToDtoWithTags to v2
+  - Create v2 getHabit endpoint
+- Problem: runtime sees both endpoints as the same from a route perspective
+- Solution: nuget: asp.versioning.mvc solves this via uri
+- Define versioning in AddControllers (rename to AddApiServices)
+  ```
+  builder.Services.AddApiVersioning(o => o.DefaultApiVersion = new ApiVersion(1.0), assumedefault, reportApiVersions, ).AddMvc()
+  ```
+- Version selector -> CurrentImplementationApiVersionSelector
+- ApiVersionReader = new UrlSegmentApiVersionReader()
+- In controller:
+  ```
+  [ApiVersion(1.0)] [ApiVersion(2.0)] Route("v{version:apiVersion}/habits")
+  ```
+- Use attributes on endpoints:
+  ```
+  [MapToApiVersion(1.0)] [MapToApiVersion(2.0)]
+  ```
+- Try request with /v1/
+- Using version also alters the hateoas links
