@@ -163,3 +163,21 @@
   ```
 - Try request with /v1/
 - Using version also alters the hateoas links
+- Continue here
+- Replace UriSegmentReader with Combined approach:
+  ```
+  ApiVersionReader.Combine(new MediaTypeApiVersionReader + new MediaReaderBuilder.Template)
+  ```
+- Define template format:
+  ```
+  "application/vnd.deb-habit.hateoas.{version}+json"
+  ```
+- Put custom media type back to global config (formatter.SupportedMediaTypes from OutputFormatters)
+- Add new CustomTypes:
+  - Hateoas1, Hateoas2 with version as in template 
+  - JsonV1, JsonV2 /json;v=X
+- Add support for all of these media types
+- Get rid of hardcoded version in [Route], leave [ApiVersion(1.0)]
+- Specify only on endpoint
+- Try requests with versioned media type
+- Caution: breaks other endpoints, because UseHighestVersion is 2.0. Could use DefaultSelector instead
