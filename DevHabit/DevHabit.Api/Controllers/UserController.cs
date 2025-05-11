@@ -1,6 +1,7 @@
 using Asp.Versioning;
 
 using DevHabit.Api.Database;
+using DevHabit.Api.DTOs.Users;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,8 @@ public class UserController(ApplicationDbContext dbContext) : ControllerBase
     [HttpGet]
     public async Task<ActionResult> GetUserById(string id)
     {
-        var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        var user = await dbContext.Users.Select(UserQueries.ToDto())
+                                        .FirstOrDefaultAsync(u => u.Id == id);
 
         if (user is null)
         {
