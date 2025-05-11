@@ -181,3 +181,19 @@
 - Specify only on endpoint
 - Try requests with versioned media type
 - Caution: breaks other endpoints, because UseHighestVersion is 2.0. Could use DefaultSelector instead
+
+# Auth Stuff
+## User Ressource
+
+- User Entity Id, Email, Name, CreatedAtUtc, UpdatedAtUtc, IdentityId (from the identityProvider (like azure, keycloak, ...)
+- start with asp.net identity as provider
+- UserDto (id, mail, name, created+updatedAtUtc)
+- UserQueries (projectToDto)
+- Split all entities in their own files
+- db config max length on id, mail, IdentityId, name index+unique on email + identityId
+- UserController GetUserById
+- Custom Media Types (habitsController i.e.) Produces: Json, JsonV1, JsonV2, HateoasJson+v1+v2
+- IncludeLinks on HabitsQueryParameters (what's the difference in media types then?)
+- QueryParameters implements AcceptHeaderDto IncludeLinks is property, check if SubTypeWithoutSuffix is HateoasSubType
+- Also in GetHabitById, introduce strongly typed argument
+- TagsController Prodcues v1 media types
