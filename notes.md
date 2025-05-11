@@ -185,12 +185,14 @@
 # Auth Stuff
 ## User Ressource
 
+### Entity Setup
 - User Entity Id, Email, Name, CreatedAtUtc, UpdatedAtUtc, IdentityId (from the identityProvider (like azure, keycloak, ...)
 - start with asp.net identity as provider
 - UserDto (id, mail, name, created+updatedAtUtc)
 - UserQueries (projectToDto)
 - Split all entities in their own files
 - db config max length on id, mail, IdentityId, name index+unique on email + identityId
+### Controller changes
 - UserController GetUserById
 - Custom Media Types (habitsController i.e.) Produces: Json, JsonV1, JsonV2, HateoasJson+v1+v2
 - IncludeLinks on HabitsQueryParameters (what's the difference in media types then?)

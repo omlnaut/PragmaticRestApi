@@ -6,5 +6,5 @@ public sealed record UsersDto
     public required string Mail { get; set; }
     public required string Name { get; set; }
     public required DateTime CreatedAtUtc { get; set; }
-    public required DateTime UpdatedAtUtc { get; set; }
+    public required DateTime? UpdatedAtUtc { get; set; }
 }
