@@ -22,6 +22,12 @@ namespace DevHabit.Api.Controllers;
 [ApiController]
 [ApiVersion(1.0)]
 [Route("/habits")]
+[Produces(MediaTypeNames.Application.Json,
+CustomMediaTypeNames.App.JsonV1,
+CustomMediaTypeNames.App.JsonV2,
+CustomMediaTypeNames.App.HateoasV1,
+CustomMediaTypeNames.App.HateoasV2
+)]
 public class HabitsController(ApplicationDbContext dbContext, LinkService linkService) : ControllerBase
 {
     [HttpGet]
@@ -65,9 +71,7 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
 
         var totalCount = await habitsQueryable.CountAsync();
 
-        var includeLinks = query.Accept == CustomMediaTypeNames.App.HateoasV1;
-
-        var paginationItems = includeLinks
+        var paginationItems = query.IncludeLinks
             ? dataShapingService.ShapeData(items, query.fields, habitDto => CreateLinksForHabit(habitDto.Id, query.fields))
             : dataShapingService.ShapeData(items, query.fields, linkFactory: null);
 
@@ -78,7 +82,7 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
             PageSize = query.pageSize,
             TotalCount = totalCount,
         };
-        if (includeLinks)
+        if (query.IncludeLinks)
         {
             paginationResult.Links = CreateLinksForHabits(query, paginationResult.HasNextPage, paginationResult.HasPreviousPage);
         }
