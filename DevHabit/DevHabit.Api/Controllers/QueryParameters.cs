@@ -20,15 +20,24 @@ public record AcceptHeaderDto
 public sealed record QueryParameters : AcceptHeaderDto
 {
     [FromQuery(Name = "q")]
-    public string? search { get; set; }
-    public string? fields { get; set; }
-    public HabitType? type { get; set; }
-    public HabitStatus? status { get; set; }
-    public string? sort { get; set; }
+    [Newtonsoft.Json.JsonProperty(PropertyName = "search")]
+    public string? Search { get; set; }
 
-    public int page { get; set; } = 1;
-    public int pageSize { get; set; } = 10;
+    [Newtonsoft.Json.JsonProperty(PropertyName = "fields")]
+    public string? Fields { get; set; }
 
-    [FromHeader(Name = "Accept")]
-    public string? Accept { get; init; }
+    [Newtonsoft.Json.JsonProperty(PropertyName = "type")]
+    public HabitType? Type { get; set; }
+
+    [Newtonsoft.Json.JsonProperty(PropertyName = "status")]
+    public HabitStatus? Status { get; set; }
+
+    [Newtonsoft.Json.JsonProperty(PropertyName = "sort")]
+    public string? Sort { get; set; }
+
+    [Newtonsoft.Json.JsonProperty(PropertyName = "page")]
+    public int Page { get; set; } = 1;
+
+    [Newtonsoft.Json.JsonProperty(PropertyName = "pageSize")]
+    public int PageSize { get; set; } = 10;
 }
