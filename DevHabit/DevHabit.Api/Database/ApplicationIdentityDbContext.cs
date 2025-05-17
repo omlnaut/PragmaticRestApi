@@ -8,6 +8,8 @@ public sealed class ApplicationIdentityDbContext(DbContextOptions<ApplicationIde
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        base.OnModelCreating(builder);
+
         builder.HasDefaultSchema(Schemas.Identity);
     }
 }

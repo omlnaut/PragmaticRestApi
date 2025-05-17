@@ -9,17 +9,21 @@ public static class DatabaseExtensions
     public static async Task ApplyMigrationAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
-        using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+        using var applicationDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        using var identityDbContext = scope.ServiceProvider.GetRequiredService<ApplicationIdentityDbContext>();
 
         try
         {
-            await dbContext.Database.MigrateAsync();
-            app.Logger.LogInformation("Database migration completed.");
+            await applicationDbContext.Database.MigrateAsync();
+            app.Logger.LogInformation("Application Database migration completed.");
+
+            await identityDbContext.Database.MigrateAsync();
+            app.Logger.LogInformation("Identity Database migration completed.");
         }
         catch (Exception ex)
         {
-            app.Logger.LogError(ex, "An error occurred while migrating the database.");
+            app.Logger.LogError(ex, "An error occurred while migrating the databases.");
         }
     }
 
