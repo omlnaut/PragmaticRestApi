@@ -8,8 +8,8 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5000/v1/habits?sort=description asc&pageSize=2&fields=Name, DescRiptIon, Id
-Content-Type: application/json
+GET http://localhost:5000/habits?sort=description asc&pageSize=2&fields=Name, DescRiptIon, Id
+Accept: application/vnd.dev-habit.hateoas.1+json
 
 ###
 GET http://localhost:5000/habits?sort=description asc&pageSize=2&fields=Name, DescRiptIon

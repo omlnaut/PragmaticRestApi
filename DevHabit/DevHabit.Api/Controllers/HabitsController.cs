@@ -22,11 +22,12 @@ namespace DevHabit.Api.Controllers;
 [ApiController]
 [ApiVersion(1.0)]
 [Route("/habits")]
-[Produces(MediaTypeNames.Application.Json,
-CustomMediaTypeNames.App.JsonV1,
-CustomMediaTypeNames.App.JsonV2,
-CustomMediaTypeNames.App.HateoasV1,
-CustomMediaTypeNames.App.HateoasV2
+[Produces(
+    MediaTypeNames.Application.Json,
+    CustomMediaTypeNames.App.JsonV1,
+    CustomMediaTypeNames.App.JsonV2,
+    CustomMediaTypeNames.App.HateoasV1,
+    CustomMediaTypeNames.App.HateoasV2
 )]
 public class HabitsController(ApplicationDbContext dbContext, LinkService linkService) : ControllerBase
 {
@@ -36,50 +37,50 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
                                                                    SortMappingProvider sortMappingProvider,
                                                                    DataShapingService dataShapingService)
     {
-        query.search ??= query.search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+        query.Search ??= query.Search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
 
         var sortMappings = sortMappingProvider.GetMappings<HabitDto, Habit>();
 
-        if (!sortMappingProvider.ValidateMappings<HabitDto, Habit>(query.sort))
+        if (!sortMappingProvider.ValidateMappings<HabitDto, Habit>(query.Sort))
         {
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
-                detail: $"The provided sort parameter is not valid: {query.sort}"
+                detail: $"The provided sort parameter is not valid: {query.Sort}"
             );
         }
 
-        if (!dataShapingService.Validate<HabitDto>(query.fields))
+        if (!dataShapingService.Validate<HabitDto>(query.Fields))
         {
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
-                detail: $"The provided fields parameter is not valid: {query.fields}"
+                detail: $"The provided fields parameter is not valid: {query.Fields}"
             );
         }
 
         var habitsQueryable = dbContext.Habits
-            .Where(h => query.search == null || h.Name.Contains(query.search, StringComparison.InvariantCultureIgnoreCase)
+            .Where(h => query.Search == null || h.Name.Contains(query.Search, StringComparison.InvariantCultureIgnoreCase)
                     || h.Description != null
-                    && h.Description.Contains(query.search, StringComparison.InvariantCultureIgnoreCase))
-            .Where(h => query.type == null || h.Type == query.type)
-            .Where(h => query.status == null || h.Status == query.status)
-            .ApplySort(query.sort, sortMappings)
+                    && h.Description.Contains(query.Search, StringComparison.InvariantCultureIgnoreCase))
+            .Where(h => query.Type == null || h.Type == query.Type)
+            .Where(h => query.Status == null || h.Status == query.Status)
+            .ApplySort(query.Sort, sortMappings)
             .Select(HabitQueries.ToDto());
 
-        var items = await habitsQueryable.Skip((query.page - 1) * query.pageSize)
-                               .Take(query.pageSize)
+        var items = await habitsQueryable.Skip((query.Page - 1) * query.PageSize)
+                               .Take(query.PageSize)
                                .ToListAsync();
 
         var totalCount = await habitsQueryable.CountAsync();
 
         var paginationItems = query.IncludeLinks
-            ? dataShapingService.ShapeData(items, query.fields, habitDto => CreateLinksForHabit(habitDto.Id, query.fields))
-            : dataShapingService.ShapeData(items, query.fields, linkFactory: null);
+            ? dataShapingService.ShapeData(items, query.Fields, habitDto => CreateLinksForHabit(habitDto.Id, query.Fields))
+            : dataShapingService.ShapeData(items, query.Fields, linkFactory: null);
 
         var paginationResult = new PaginationResult<ExpandoObject>
         {
             Items = paginationItems,
-            Page = query.page,
-            PageSize = query.pageSize,
+            Page = query.Page,
+            PageSize = query.PageSize,
             TotalCount = totalCount,
         };
         if (query.IncludeLinks)
@@ -172,12 +173,12 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
         {
             linkService.CreateLink(nameof(GetHabits), "self", HttpMethods.Get,
             new {
-                query.page,
-                 query.pageSize,
-                 query.fields,
-                q = query.search,
-                 query.type,
-                 query.status,
+                query.Page,
+                 query.PageSize,
+                 query.Fields,
+                q = query.Search,
+                 query.Type,
+                 query.Status,
             }),
             linkService.CreateLink(nameof(GetHabits), "create", HttpMethods.Post)
         };
@@ -188,12 +189,12 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
                 linkService.CreateLink(nameof(GetHabits), "next-page", HttpMethods.Get,
                 new
                 {
-                    page = query.page + 1,
-                    query.pageSize,
-                    query.fields,
-                    q = query.search,
-                    query.type,
-                    query.status,
+                    page = query.Page + 1,
+                    query.PageSize,
+                    query.Fields,
+                    q = query.Search,
+                    query.Type,
+                    query.Status,
                 })
             );
         }
@@ -203,12 +204,12 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
                 linkService.CreateLink(nameof(GetHabits), "previous-page", HttpMethods.Get,
                 new
                 {
-                    page = query.page - 1,
-                    query.pageSize,
-                    query.fields,
-                    q = query.search,
-                    query.type,
-                    query.status,
+                    page = query.Page - 1,
+                    query.PageSize,
+                    query.Fields,
+                    q = query.Search,
+                    query.Type,
+                    query.Status,
                 })
             );
         }
