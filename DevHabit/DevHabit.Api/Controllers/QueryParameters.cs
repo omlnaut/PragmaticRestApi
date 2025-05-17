@@ -4,6 +4,8 @@ using DevHabit.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 
+using Newtonsoft.Json;
+
 namespace DevHabit.Api.Controllers;
 
 public record AcceptHeaderDto
@@ -20,24 +22,24 @@ public record AcceptHeaderDto
 public sealed record QueryParameters : AcceptHeaderDto
 {
     [FromQuery(Name = "q")]
-    [Newtonsoft.Json.JsonProperty(PropertyName = "search")]
+    [JsonProperty(PropertyName = "search")]
     public string? Search { get; set; }
 
-    [Newtonsoft.Json.JsonProperty(PropertyName = "fields")]
+    [JsonProperty(PropertyName = "fields")]
     public string? Fields { get; set; }
 
-    [Newtonsoft.Json.JsonProperty(PropertyName = "type")]
+    [JsonProperty(PropertyName = "type")]
     public HabitType? Type { get; set; }
 
-    [Newtonsoft.Json.JsonProperty(PropertyName = "status")]
+    [JsonProperty(PropertyName = "status")]
     public HabitStatus? Status { get; set; }
 
-    [Newtonsoft.Json.JsonProperty(PropertyName = "sort")]
+    [JsonProperty(PropertyName = "sort")]
     public string? Sort { get; set; }
 
-    [Newtonsoft.Json.JsonProperty(PropertyName = "page")]
+    [JsonProperty(PropertyName = "page")]
     public int Page { get; set; } = 1;
 
-    [Newtonsoft.Json.JsonProperty(PropertyName = "pageSize")]
+    [JsonProperty(PropertyName = "pageSize")]
     public int PageSize { get; set; } = 10;
 }

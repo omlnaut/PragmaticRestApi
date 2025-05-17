@@ -57,11 +57,11 @@ public static class DependencyInjectionExtensions
                     o.DefaultApiVersion = new ApiVersion(1.0);
                     o.AssumeDefaultVersionWhenUnspecified = true;
                     o.ReportApiVersions = true;
-                    o.ApiVersionSelector = new CurrentImplementationApiVersionSelector(o);
+                    o.ApiVersionSelector = new DefaultApiVersionSelector(o);
                     o.ApiVersionReader = ApiVersionReader.Combine(
-                        new UrlSegmentApiVersionReader(),
-                        new MediaTypeApiVersionReaderBuilder().Template("application/vnd.dev-habit.hateoas.{version}+json")
-                                                              .Build());
+                        new MediaTypeApiVersionReaderBuilder().Template("application/vnd.dev-habit.hateoas.{version}+json").Build(),
+                        new MediaTypeApiVersionReaderBuilder().Template("application/json;v={version}").Build()
+                        );
                 })
             .AddMvc();
 

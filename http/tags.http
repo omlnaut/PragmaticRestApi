@@ -20,6 +20,10 @@ GET http://localhost:5000/habits/h_7efee871-b1fe-444f-b145-b88aa30c625d?fields=N
 Accept: application/vnd.dev-habit.hateoas.1+json
 
 ###
+GET http://localhost:5000/habits/h_7efee871-b1fe-444f-b145-b88aa30c625d?fields=Name,%20DescRiptIon, Id, CreatedAtUtc, UpdatedAtUtc
+Accept: application/json;v=1
+
+###
 GET http://localhost:5000/habits/h_7efee871-b1fe-444f-b145-b88aa30c625d?fields=Name,%20DescRiptIon, Id, CreatedAt, UpdatedAt
 Accept: application/vnd.dev-habit.hateoas.2+json
 

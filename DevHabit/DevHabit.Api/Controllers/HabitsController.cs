@@ -94,14 +94,14 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
     [HttpGet("{id}")]
     [ApiVersion(1.0)]
     public async Task<ActionResult> GetHabitById(string id,
-                                                 string? fields,
+                                                 GetHabitParameters query,
                                                  DataShapingService dataShapingService)
     {
-        if (!dataShapingService.Validate<HabitWithTagsDto>(fields))
+        if (!dataShapingService.Validate<HabitWithTagsDto>(query.Fields))
         {
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
-                detail: $"The provided fields parameter is not valid: {fields}"
+                detail: $"The provided query.Fields parameter is not valid: {query.Fields}"
             );
         }
 
@@ -114,9 +114,13 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
             return NotFound();
         }
 
-        var shaped = dataShapingService.ShapeData(habit, fields);
-        List<LinkDto> links = CreateLinksForHabit(id, fields);
-        shaped.TryAdd("link", links);
+        var shaped = dataShapingService.ShapeData(habit, query.Fields);
+
+        if (query.IncludeLinks)
+        {
+            List<LinkDto> links = CreateLinksForHabit(id, query.Fields);
+            shaped.TryAdd("link", links);
+        }
 
         return Ok(shaped);
     }
@@ -124,14 +128,21 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
     [HttpGet("{id}")]
     [ApiVersion(2.0)]
     public async Task<ActionResult> GetHabitByIdV2(string id,
-                                                 string? fields,
+                                                 GetHabitParameters query,
                                                  DataShapingService dataShapingService)
     {
-        if (!dataShapingService.Validate<HabitWithTagsDtoV2>(fields))
+#pragma warning disable S1481 // Unused local variables should be removed
+
+        var versionFromRequest = HttpContext.GetRequestedApiVersion();
+
+        var acceptHeader = Request.Headers.Accept.ToString();
+#pragma warning restore S1481 // Unused local variables should be removed
+
+        if (!dataShapingService.Validate<HabitWithTagsDtoV2>(query.Fields))
         {
             return Problem(
                 statusCode: StatusCodes.Status400BadRequest,
-                detail: $"The provided fields parameter is not valid: {fields}"
+                detail: $"The provided fields parameter is not valid: {query.Fields}"
             );
         }
 
@@ -144,9 +155,13 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
             return NotFound();
         }
 
-        var shaped = dataShapingService.ShapeData(habit, fields);
-        List<LinkDto> links = CreateLinksForHabit(id, fields);
-        shaped.TryAdd("link", links);
+        var shaped = dataShapingService.ShapeData(habit, query.Fields);
+
+        if (query.IncludeLinks)
+        {
+            List<LinkDto> links = CreateLinksForHabit(id, query.Fields);
+            shaped.TryAdd("link", links);
+        }
 
         return Ok(shaped);
     }
