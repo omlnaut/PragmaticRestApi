@@ -126,9 +126,20 @@ public static class DependencyInjectionExtensions
     {
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseNpgsql(builder.Configuration.GetConnectionString("Database"), npgsqlOptions => npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Application))
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("Database"),
+                npgsqlOptions => npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Application))
             .UseSnakeCaseNamingConvention();
         });
+
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        {
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("Database"),
+                npgsqlOptions => npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName, Schemas.Identity))
+            .UseSnakeCaseNamingConvention();
+        });
+
         return builder;
     }
 }
