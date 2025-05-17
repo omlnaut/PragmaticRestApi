@@ -199,3 +199,13 @@
 - QueryParameters implements AcceptHeaderDto IncludeLinks is property, check if SubTypeWithoutSuffix is HateoasSubType
 - Also in GetHabitById, introduce strongly typed argument
 - TagsController Prodcues v1 media types
+
+## IdentityCore introduction
+- Custom dbContext for Identity (with own schema=identity)
+- ApplicationIdentityDbContext : IdentityDbContext (nuget IdentityEntityFrameworkCore)
+- constructor injects DbContextOptions<AppIdenDbContext>, pass to base
+- OnModelCreating HasDefaultSchema(Identity)
+- DI copy setup but set other schema
+- new DI extension AddAuthenticationServices on builder AddIdentity<IdentityUser, IdentityRole>() .AddEntityFrameworkStores<customdb>
+- dotnet ef migrations add AddIdentity -context ApplicationIdentityDbContext -o Migrations/Identity
+- ApplyMigrationAsync, add IdentityDbContext as copy of existing migration logic
