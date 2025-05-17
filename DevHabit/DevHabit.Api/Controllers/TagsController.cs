@@ -1,5 +1,8 @@
+using System.Net.Mime;
+
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Tags;
+using DevHabit.Api.Services;
 
 using FluentValidation;
 
@@ -10,6 +13,11 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [Route("Tags")]
+[Produces(
+    MediaTypeNames.Application.Json,
+    CustomMediaTypeNames.App.JsonV1,
+    CustomMediaTypeNames.App.HateoasV1
+)]
 public class TagsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]
