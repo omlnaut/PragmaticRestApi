@@ -1,12 +1,11 @@
-using System.Net;
-
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Users;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 
 namespace DevHabit.Api.Controllers;
@@ -17,9 +16,9 @@ namespace DevHabit.Api.Controllers;
 public class AuthController(
     UserManager<IdentityUser> userManager,
     ApplicationDbContext appDbContext,
-    IdentityDbContext identityDbContext) : ControllerBase
+    ApplicationIdentityDbContext identityDbContext) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterUserDto dto)
     {
         var identityUser = new IdentityUser()
@@ -28,7 +27,11 @@ public class AuthController(
             UserName = dto.Email
         };
 
-        var registrationResult = await userManager.CreateAsync(identityUser);
+        using var transaction = await identityDbContext.Database.BeginTransactionAsync();
+        appDbContext.Database.SetDbConnection(identityDbContext.Database.GetDbConnection());
+        await appDbContext.Database.UseTransactionAsync(transaction.GetDbTransaction());
+
+        var registrationResult = await userManager.CreateAsync(identityUser, dto.Password);
 
         if (!registrationResult.Succeeded)
         {
@@ -40,7 +43,16 @@ public class AuthController(
             }
             return BadRequest(problem);
         }
-        return Ok();
+
+        var user = dto.ToEntity(identityUser.Id);
+
+        await appDbContext.Users.AddAsync(user);
+
+        await appDbContext.SaveChangesAsync();
+
+        await transaction.CommitAsync();
+
+        return Ok(user.Id);
     }
 
 

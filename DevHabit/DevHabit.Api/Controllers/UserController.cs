@@ -13,7 +13,7 @@ namespace DevHabit.Api.Controllers;
 [Route("/users")]
 public class UserController(ApplicationDbContext dbContext) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<ActionResult> GetUserById(string id)
     {
         var user = await dbContext.Users.Select(UserQueries.ToDto())

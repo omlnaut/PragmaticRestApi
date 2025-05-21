@@ -6,7 +6,8 @@ builder.AddApiServices()
        .AddExceptionHandling()
        .AddObservability()
        .AddApplicationServices()
-       .AddDatabase();
+       .AddDatabase()
+       .AddAuthenticationServices();
 
 var app = builder.Build();
 

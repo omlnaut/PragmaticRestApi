@@ -1,0 +1,13 @@
+POST http://localhost:5000/auth/register
+Content-Type: application/json
+
+{
+    "Email": "testier@dev.com",
+    "Name": "testi",
+    "Password": "123aA!",
+    "ConfirmPassword": "123aA!"
+}
+
+###
+GET http://localhost:5000/users/u_f3a81c44-7920-4cb2-acc3-023588f9c80f
+Accept: application/json;v=1
