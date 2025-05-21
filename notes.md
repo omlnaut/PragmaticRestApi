@@ -209,3 +209,49 @@
 - new DI extension AddAuthenticationServices on builder AddIdentity<IdentityUser, IdentityRole>() .AddEntityFrameworkStores<customdb>
 - dotnet ef migrations add AddIdentity -context ApplicationIdentityDbContext -o Migrations/Identity
 - ApplyMigrationAsync, add IdentityDbContext as copy of existing migration logic
+
+## User Registration
+
+- **AuthController** 
+  - Route "auth"
+  - Use `[AllowAnonymous]` attribute
+
+- **Dependencies**
+  - Inject UserManager, DbContext, IdentityDbContext
+  - UserManager allows interaction with the users table
+
+- **Endpoint**
+  - POST endpoint "register" - `Task<IActionResult> Register(RegisterUserDto)`
+
+- **RegisterUserDto**
+  - Properties: Email, Name, Password, ConfirmPassword
+
+- **Implementation Flow**
+  - Create identity user
+  - Create app user
+  - Return Ok()
+
+- **Process Details**
+  - Create new IdentityUser -> Call CreateAsync
+  - Check result for succeeded
+  - If not successful: Return Problem(detail: "unable to register", statusCode: 400, extensions: errors.ToDictionary[Code->description])
+  - Use UserMappings -> ToEntity(this RegisterUserDto)
+  - Generate ID: `Id = $"u_{Guid.CreateVersion7}"`
+  - Set User.IdentityId from identityUser
+  - Return user.Id for testing
+
+- **Transaction Handling**
+  - Problem: Two dbContexts, operations might run in separate transactions
+  - Solution:
+    ```csharp
+    using transaction = await Database.BeginTransactionAsync()
+    await transaction.CommitAsync()
+    ```
+  - To sync with appDbContext:
+    ```csharp
+    DbContext.Database.SetDbConnection(identity.GetConnection())
+    .UseTransactionAsync(transaction.GetDbTransaction)
+    ```
+
+- **Testing**
+  - Try with password "123a"
