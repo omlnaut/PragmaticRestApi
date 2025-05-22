@@ -255,3 +255,93 @@
 
 - **Testing**
   - Try with password "123a"
+
+## AccessToken
+
+- Install nuget JwtBearer (AspNetCore)
+
+- DI: Configure Authentication and JWT Bearer
+  ```csharp
+  AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  AddJwtBearer(options => options.TokenValidParameters = new() { ...})
+  ```
+
+- Create JwtAuthOptions class in settings folder
+  - Properties: Issuer, Audience, Key, ExpirationInMinutes(int)
+
+- Add JWT section in appsettings.development.json
+  - Fields: Issuer, Audience, Key, ExpirationInMinutes, RefreshTokenExpirationDays
+  - Example values:
+    - Issuer: dev-habit.api
+    - Audience: dev-habit.app
+
+- Register Options in DI
+  - Use configure->config.GetSection for global DI
+  - For local setup, use getSection().Get
+
+- Configure TokenValidationParameters
+  - ValidIssuer, ValidAudience
+  - IssuerSigningKey (new SymmetricSecurityKey(UTF8.GetBytes(key)))
+
+- Call AddAuthorization()
+
+- Add middleware in correct order
+  - UseAuthentication
+  - UseAuthorization
+  - Order is important!
+
+- Create TokenProvider service
+  - Inject IOptions<JwtAuthOptions>
+
+- Create token-related DTOs
+  - TokenRequest (userId, Email)
+  - AccessTokensDto (AccessToken, RefreshToken)
+
+- In TokenProvider service
+  - Create method: AccessToken Create(request)
+  - Initially return empty strings
+
+- Add private helper methods
+  - GenerateAccessToken(request)
+  - GenerateRefreshToken()
+
+- Implement access token generation
+  - Create SymmetricSecurityKey from key bytes
+  - Create SigningCredentials with HmacSha256
+  - Generate claims list:
+    - JwtRegisteredClaimNames.Sub (UserId)
+    - Email claim
+  - Create token descriptor:
+    - ClaimsIdentity with claims
+    - Set expiration (now + expirationInMinutes)
+    - Add SigningCredentials
+    - Set Issuer and Audience
+  - Create token using JsonWebTokenHandler
+
+- Move DTOs to their own files in Dtos-Auth folder
+
+- Register TokenProvider as transient service
+
+- Update AuthController register endpoint
+  - Create access tokens at end of registration
+  - Use: tokenProvider.Create(new TokenRequest(identityUser.Id, email))
+  - Return accessTokenDto
+
+- Create login endpoint
+  - Return type: ActionResult<AccessTokensDto>
+  - Create LoginUserDto class (email, password)
+  - Implementation:
+    - Find identityUser by email using UserManager
+    - Check for null and validate password
+    - If invalid, return Unauthorized()
+    - Create token request and return access tokens
+
+- Test by adding [Authorize] attribute to controllers
+
+- Fix 404 issue on unauthorized requests
+  - By default, unauthorized requests redirect to login page
+  - Configure AddAuthentication:
+    ```csharp
+    o => o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme
+         o => o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme
+    ```
