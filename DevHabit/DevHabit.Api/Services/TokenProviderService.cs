@@ -35,7 +35,7 @@ public class TokenProviderService(IOptions<JwtAuthenticationOptions> options)
         var descriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddMinutes(_options.ExpirationInMinutes),
+            Expires = DateTime.UtcNow.AddMinutes(_options.ExpirationInMinutes),
             SigningCredentials = creds,
             Issuer = _options.Issuer,
             Audience = _options.Audience

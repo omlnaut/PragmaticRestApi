@@ -10,6 +10,7 @@ Content-Type: application/json
 
 GET http://localhost:5000/habits?sort=description asc&pageSize=2&fields=Name, DescRiptIon, Id
 Accept: application/vnd.dev-habit.hateoas.1+json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMGEyZWY5Ni0yOGJhLTQwNzUtOTdlMC0xNjg0MzBiYTdkMjQiLCJlbWFpbCI6ImFzZGZAZGV2LmNvbSIsImF1ZCI6ImRldi1oYWJpdC5hcHAiLCJpc3MiOiJkZXYtaGFiaXQuYXBpIiwiZXhwIjoxNzQ4MjA0MDgyLCJpYXQiOjE3NDgyMDA0ODIsIm5iZiI6MTc0ODIwMDQ4Mn0.Lq7Ti2dopfPVvh4cc8YBK29so13DYwvhF6xwmSpkwEo
 
 ###
 GET http://localhost:5000/habits?sort=description asc&pageSize=2&fields=Name, DescRiptIon

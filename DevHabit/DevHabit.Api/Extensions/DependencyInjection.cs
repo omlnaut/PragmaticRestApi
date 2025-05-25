@@ -162,7 +162,11 @@ public static class DependencyInjectionExtensions
         builder.Services.Configure<JwtAuthenticationOptions>(jwtSection);
 
         builder.Services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 var jwtOptions = jwtSection.Get<JwtAuthenticationOptions>()
@@ -170,9 +174,14 @@ public static class DependencyInjectionExtensions
 
                 options.TokenValidationParameters = new()
                 {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
                     ValidIssuer = jwtOptions.Issuer,
                     ValidAudience = jwtOptions.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
+                    ClockSkew = TimeSpan.FromMinutes(5)
                 };
             });
         builder.Services.AddAuthorization();
