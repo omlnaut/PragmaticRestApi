@@ -1,5 +1,6 @@
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Users;
+using DevHabit.Api.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,10 +17,11 @@ namespace DevHabit.Api.Controllers;
 public class AuthController(
     UserManager<IdentityUser> userManager,
     ApplicationDbContext appDbContext,
-    ApplicationIdentityDbContext identityDbContext) : ControllerBase
+    ApplicationIdentityDbContext identityDbContext,
+    TokenProviderService tokenProviderService) : ControllerBase
 {
     [HttpPost("register")]
-    public async Task<ActionResult> Register(RegisterUserDto dto)
+    public async Task<ActionResult<AccessTokensDto>> Register(RegisterUserDto dto)
     {
         var identityUser = new IdentityUser()
         {
@@ -52,7 +54,9 @@ public class AuthController(
 
         await transaction.CommitAsync();
 
-        return Ok(user.Id);
+        var accessTokenDto = tokenProviderService.Create(new TokenRequest(identityUser.Id, identityUser.Email));
+
+        return Ok(accessTokenDto);
     }
 
 
