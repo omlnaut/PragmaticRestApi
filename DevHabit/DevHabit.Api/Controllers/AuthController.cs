@@ -59,5 +59,21 @@ public class AuthController(
         return Ok(accessTokenDto);
     }
 
+    [HttpPost("login")]
+    public async Task<ActionResult> Login(LoginUserDto dto)
+    {
+        var identityUser = await userManager.FindByEmailAsync(dto.Email);
 
+        if (identityUser is null || !await userManager.CheckPasswordAsync(identityUser, dto.Password))
+        {
+            return Unauthorized();
+        }
+
+        var tokenRequest = new TokenRequest(identityUser.Id, dto.Email);
+        var tokens = tokenProviderService.Create(tokenRequest);
+
+        return Ok(tokens);
+    }
 }
+
+public sealed record LoginUserDto(string Email, string Password);

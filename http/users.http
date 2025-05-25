@@ -9,5 +9,14 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:5000/auth/login
+Content-Type: application/json
+
+{
+    "Email": "asdf@dev.com",
+    "Password": "123aA!",
+}
+
+###
 GET http://localhost:5000/users/u_f3a81c44-7920-4cb2-acc3-023588f9c80f
 Accept: application/json;v=1
