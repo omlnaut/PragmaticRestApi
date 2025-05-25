@@ -172,8 +172,8 @@ public static class DependencyInjectionExtensions
                     ValidAudience = jwtOptions.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key))
                 };
-
             });
+        builder.Services.AddAuthorization();
 
         return builder;
     }

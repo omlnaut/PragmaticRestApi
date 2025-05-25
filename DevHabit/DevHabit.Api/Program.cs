@@ -22,6 +22,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseExceptionHandler();
 
+app.UseAuthentication()
+   .UseAuthorization();
+
 app.MapControllers();
 
 await app.RunAsync().ConfigureAwait(false); // Change to false to avoid potential deadlocks
