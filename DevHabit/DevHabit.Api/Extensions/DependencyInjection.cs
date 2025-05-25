@@ -1,3 +1,5 @@
+using System.Text;
+
 using Asp.Versioning;
 
 using DevHabit.Api.Database;
@@ -6,8 +8,11 @@ using DevHabit.Api.Entities;
 using DevHabit.Api.Middleware;
 using DevHabit.Api.Services;
 using DevHabit.Api.Services.Sorting;
+using DevHabit.Api.Settings;
 
 using FluentValidation;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 using Microsoft.AspNetCore.Identity;
 
@@ -16,6 +21,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.IdentityModel.Tokens;
 
 using Newtonsoft.Json.Serialization;
 
@@ -149,6 +155,25 @@ public static class DependencyInjectionExtensions
     {
         builder.Services.AddIdentity<IdentityUser, IdentityRole>()
                         .AddEntityFrameworkStores<ApplicationIdentityDbContext>();
+
+        var jwtSection = builder.Configuration.GetSection(JwtAuthenticationOptions.DefaultSectionName);
+        builder.Services.Configure<JwtAuthenticationOptions>(jwtSection);
+
+        builder.Services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                var jwtOptions = jwtSection.Get<JwtAuthenticationOptions>()
+                                ?? throw new InvalidOperationException("JWT authentication options must be configured.");
+
+                options.TokenValidationParameters = new()
+                {
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key))
+                };
+
+            });
 
         return builder;
     }
