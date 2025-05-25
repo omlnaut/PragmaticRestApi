@@ -127,6 +127,8 @@ public static class DependencyInjectionExtensions
         builder.Services.AddTransient<DataShapingService>();
         builder.Services.AddTransient<LinkService>();
 
+        builder.Services.AddTransient<TokenProviderService>();
+
         return builder;
     }
 
