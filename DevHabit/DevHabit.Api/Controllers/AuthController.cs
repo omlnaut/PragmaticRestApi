@@ -1,12 +1,16 @@
 using DevHabit.Api.Database;
+using DevHabit.Api.DTOs.Auth;
 using DevHabit.Api.DTOs.Users;
+using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
+using DevHabit.Api.Settings;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Options;
 
 
 namespace DevHabit.Api.Controllers;
@@ -18,8 +22,12 @@ public class AuthController(
     UserManager<IdentityUser> userManager,
     ApplicationDbContext appDbContext,
     ApplicationIdentityDbContext identityDbContext,
-    TokenProviderService tokenProviderService) : ControllerBase
+    TokenProviderService tokenProviderService,
+    IOptions<JwtAuthenticationOptions> options) : ControllerBase
 {
+    private readonly JwtAuthenticationOptions _options = options.Value;
+
+
     [HttpPost("register")]
     public async Task<ActionResult<AccessTokensDto>> Register(RegisterUserDto dto)
     {
@@ -52,9 +60,13 @@ public class AuthController(
 
         await appDbContext.SaveChangesAsync();
 
-        await transaction.CommitAsync();
-
         var accessTokenDto = tokenProviderService.Create(new TokenRequest(identityUser.Id, identityUser.Email));
+        var refreshToken = accessTokenDto.ToRefreshTokenEntity(identityUser.Id, _options.RefreshTokenExpirationDays);
+
+        await identityDbContext.RefreshTokens.AddAsync(refreshToken);
+        await identityDbContext.SaveChangesAsync();
+
+        await transaction.CommitAsync();
 
         return Ok(accessTokenDto);
     }
@@ -71,6 +83,11 @@ public class AuthController(
 
         var tokenRequest = new TokenRequest(identityUser.Id, dto.Email);
         var tokens = tokenProviderService.Create(tokenRequest);
+
+        var refreshToken = tokens.ToRefreshTokenEntity(identityUser.Id, _options.RefreshTokenExpirationDays);
+
+        await identityDbContext.RefreshTokens.AddAsync(refreshToken);
+        await identityDbContext.SaveChangesAsync();
 
         return Ok(tokens);
     }
