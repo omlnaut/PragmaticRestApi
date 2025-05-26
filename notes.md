@@ -345,3 +345,40 @@
     o => o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme
          o => o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme
     ```
+
+## RefreshToken
+
+- **RefreshToken Entity**
+  - Properties: Guid Id, UserId, Token, ExpiresAtUtc
+  - Navigation property: IdentityUser User
+
+- **Configure Database (ApplicationIdentityDbContext)**
+  - DbSet<RefreshToken> RefreshTokens
+  - Entity configuration:
+    - Id as key
+    - UserId and Token with maxlength (300, 100)
+    - Token unique index
+    - 1-to-many relationship: RefreshToken has many User with foreign key and cascade delete
+
+- **Migration**
+  - Create migration with: `-Context ApplicationIdentityDbContext -o Migrations/Identity`
+
+- **Token Generation**
+  - Generate RefreshToken in TokenProvider using `RandomNumberGenerator.GetBytes(32)` and `Convert.ToBase64String`
+
+- **Controller Integration**
+  - AuthController Register: Move token generation before commit transaction
+  - Create RefreshTokenEntity with ExpiresAt from JwtAuthOptions
+  - Add to identityDbContext and save
+  - Apply same pattern for login endpoint
+
+- **Refresh Endpoint**
+  - Create new endpoint: `Task<ActionResult<AccessTokenDto>> Refresh(RefreshTokenDto)`
+  - Get refresh token from dbContext
+  - If not found -> return Unauthorized
+  - Check expiration -> if expired, return Unauthorized
+  - Otherwise:
+    - Create new tokens from tokenProvider(request)
+    - Update info in refreshToken (Token and expires date)
+    - Save changes
+    - Return Ok with new tokens
