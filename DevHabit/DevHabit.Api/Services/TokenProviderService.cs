@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 using DevHabit.Api.DTOs.Users;
@@ -18,7 +19,7 @@ public class TokenProviderService(IOptions<JwtAuthenticationOptions> options)
     {
         return new AccessTokensDto(
             GenerateAccessToken(request),
-            GenerateRefreshToken(request)
+            GenerateRefreshToken()
         );
     }
 
@@ -47,9 +48,12 @@ public class TokenProviderService(IOptions<JwtAuthenticationOptions> options)
         return token;
     }
 
-    public static string GenerateRefreshToken(TokenRequest request)
+    public static string GenerateRefreshToken()
     {
-        return string.Empty;
+        var random = RandomNumberGenerator.GetBytes(32);
+        var token = Convert.ToBase64String(random);
+
+        return token;
     }
 
 }
