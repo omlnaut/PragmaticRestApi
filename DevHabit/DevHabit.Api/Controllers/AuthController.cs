@@ -91,6 +91,35 @@ public class AuthController(
 
         return Ok(tokens);
     }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult<AccessTokensDto>> Refresh(RefreshTokenDto dto)
+    {
+        var dbToken = await identityDbContext.RefreshTokens.Include(r => r.User)
+                                                     .FirstOrDefaultAsync(r => r.Token == dto.Token);
+        if (dbToken is null)
+        {
+            return Unauthorized();
+        }
+
+        if (dbToken.ExpiresAtUtc < DateTime.UtcNow || dbToken.User is null || dbToken.User.Email is null)
+        {
+            return Unauthorized();
+        }
+
+        var request = new TokenRequest(dbToken.User.Id, dbToken.User.Email);
+        var tokens = tokenProviderService.Create(request);
+
+        var refreshToken = tokens.ToRefreshTokenEntity(dbToken.User.Id, _options.RefreshTokenExpirationDays);
+
+        await identityDbContext.RefreshTokens.AddAsync(refreshToken);
+        await identityDbContext.SaveChangesAsync();
+
+        return Ok(tokens);
+    }
 }
+
+public sealed record RefreshTokenDto(string Token);
+
 
 public sealed record LoginUserDto(string Email, string Password);
