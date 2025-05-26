@@ -6,6 +6,7 @@ using DevHabit.Api.Services;
 
 using FluentValidation;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace DevHabit.Api.Controllers;
     CustomMediaTypeNames.App.JsonV1,
     CustomMediaTypeNames.App.HateoasV1
 )]
+[Authorize]
 public class TagsController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpGet]

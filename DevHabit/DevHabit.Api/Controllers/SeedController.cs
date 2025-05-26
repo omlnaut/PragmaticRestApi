@@ -2,6 +2,8 @@ using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.DTOs.Tags;
 using DevHabit.Api.Entities;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +11,7 @@ namespace DevHabit.Api.Controllers;
 
 [ApiController]
 [Route("seed")]
+[Authorize]
 public class SeedController(ApplicationDbContext dbContext) : ControllerBase
 {
     [HttpPost]
