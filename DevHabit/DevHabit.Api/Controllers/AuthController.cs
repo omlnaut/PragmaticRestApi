@@ -110,9 +110,8 @@ public class AuthController(
         var request = new TokenRequest(dbToken.User.Id, dbToken.User.Email);
         var tokens = tokenProviderService.Create(request);
 
-        var refreshToken = tokens.ToRefreshTokenEntity(dbToken.User.Id, _options.RefreshTokenExpirationDays);
-
-        await identityDbContext.RefreshTokens.AddAsync(refreshToken);
+        dbToken.Token = tokens.RefreshToken;
+        dbToken.ExpiresAtUtc = DateTime.UtcNow.AddDays(_options.RefreshTokenExpirationDays);
         await identityDbContext.SaveChangesAsync();
 
         return Ok(tokens);
