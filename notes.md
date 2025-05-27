@@ -372,7 +372,7 @@
   - Add to identityDbContext and save
   - Apply same pattern for login endpoint
 
-- **Refresh Endpoint**
+  - **Refresh Endpoint**
   - Create new endpoint: `Task<ActionResult<AccessTokenDto>> Refresh(RefreshTokenDto)`
   - Get refresh token from dbContext
   - If not found -> return Unauthorized
@@ -382,3 +382,46 @@
     - Update info in refreshToken (Token and expires date)
     - Save changes
     - Return Ok with new tokens
+
+## Resource Protection
+
+- "me" endpoint in UserController 
+  - Use dbContext.Users to match Id
+  - Get Id from HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+
+- ExtensionMethod to get IdentityId 
+  - Create ClaimsPrincipalExtensions (everything starting from FindFirstValue)
+
+- Create UserContext service
+  - Dependencies: httpContextAccessor, AppDbContext, IMemoryCache
+  - Implementation:
+    - GetUserIdAsync - get identityId from httpContext
+    - Fetch user from database if not in cache (getOrCreateAsync)
+  - Use in UserController
+
+- Authorization enforcement
+  - In get/id endpoint compare GetUserIdAsync with passed id, return forbidden if not matching
+
+- DI setup
+  - AddMemoryCache
+  - AddScoped for UserContext
+
+- Protect other resources
+  - Habit Entity -> Add UserId
+  - Tag Entity -> Add UserId
+
+- Update database configurations
+  - MaxLen on UserId (500)
+  - 1 Habit has one User, User has many habits, add ForeignKey
+  - Tag name uniqueness as combination of userId+tagName
+
+- Create Migration
+  - Update migrationBuilder.Sql to delete all habits, tags, habittags
+
+- HabitsController updates
+  - Add UserContext dependency
+  - Fetch UserId, use in where statements
+  - Add to all fetching/updating endpoints
+  - In create endpoint: Add UserId in ToEntity
+
+- Update TagsController with similar changes
