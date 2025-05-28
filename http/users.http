@@ -18,6 +18,11 @@ Content-Type: application/json
 }
 
 ###
+Get http://localhost:5000/users/me
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMGEyZWY5Ni0yOGJhLTQwNzUtOTdlMC0xNjg0MzBiYTdkMjQiLCJlbWFpbCI6ImFzZGZAZGV2LmNvbSIsImF1ZCI6ImRldi1oYWJpdC5hcHAiLCJpc3MiOiJkZXYtaGFiaXQuYXBpIiwiZXhwIjoxNzQ4NDY1ODYzLCJpYXQiOjE3NDg0NjIyNjMsIm5iZiI6MTc0ODQ2MjI2M30.6duMcWOZNiUfKZKy8fYEBTNhwcposOtf5qEu29BBCrs
+
+###
 POST http://localhost:5000/auth/refresh
 Content-Type: application/json
 
