@@ -5,6 +5,7 @@ using Asp.Versioning;
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Users;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Extensions;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,8 +39,9 @@ public class UserController(ApplicationDbContext dbContext) : ControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<UsersDto>> Me()
     {
-        var requestUserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var dto = await dbContext.Users.Select(UserQueries.ToDto()).FirstAsync(u => u.Id == requestUserId);
+        var requestUserId = HttpContext.User.GetUserId();
+        var dto = await dbContext.Users.Select(UserQueries.ToDto())
+                                       .FirstAsync(u => u.Id == requestUserId);
 
         return dto;
     }
