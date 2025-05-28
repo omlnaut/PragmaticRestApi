@@ -406,6 +406,7 @@
   - AddMemoryCache
   - AddScoped for UserContext
 
+CONTINUE HERE
 - Protect other resources
   - Habit Entity -> Add UserId
   - Tag Entity -> Add UserId
