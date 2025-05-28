@@ -6,6 +6,7 @@ using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Users;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Extensions;
+using DevHabit.Api.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace DevHabit.Api.Controllers;
 [Authorize]
 [ApiVersion(1.0)]
 [Route("/users")]
-public class UserController(ApplicationDbContext dbContext) : ControllerBase
+public class UserController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase
 {
     [HttpGet("{id}")]
     public async Task<ActionResult> GetUserById(string id)
@@ -37,12 +38,24 @@ public class UserController(ApplicationDbContext dbContext) : ControllerBase
     }
 
     [HttpGet("me")]
-    public async Task<ActionResult<UsersDto>> Me()
+    public async Task<ActionResult> Me()
     {
-        var requestUserId = HttpContext.User.GetUserId();
-        var dto = await dbContext.Users.Select(UserQueries.ToDto())
-                                       .FirstAsync(u => u.Id == requestUserId);
+        var userIdFromRequest = await userContext.GetUserIdAsync();
 
-        return dto;
+        if (userIdFromRequest is null)
+        {
+            return Unauthorized();
+        }
+
+        var dto = await dbContext.Users.Where(u => u.Id == userIdFromRequest)
+                                       .Select(UserQueries.ToDto())
+                                       .FirstOrDefaultAsync();
+
+        if (dto is null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(dto);
     }
 }

@@ -40,12 +40,13 @@ public static class DependencyInjectionExtensions
 {
     public static WebApplicationBuilder AddApiServices(this WebApplicationBuilder builder)
     {
-        builder.Services.AddControllers(options =>
-        {
-            options.ReturnHttpNotAcceptable = true;
-        })
-        .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver())
-        .AddXmlSerializerFormatters();
+        builder.Services
+            .AddControllers(options =>
+                {
+                    options.ReturnHttpNotAcceptable = true;
+                })
+            .AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver())
+            .AddXmlSerializerFormatters();
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -128,6 +129,9 @@ public static class DependencyInjectionExtensions
         builder.Services.AddTransient<LinkService>();
 
         builder.Services.AddTransient<TokenProviderService>();
+
+        builder.Services.AddScoped<UserContext>();
+        builder.Services.AddMemoryCache();
 
         return builder;
     }

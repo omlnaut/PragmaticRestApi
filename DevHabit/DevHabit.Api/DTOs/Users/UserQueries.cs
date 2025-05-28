@@ -10,7 +10,7 @@ internal static class UserQueries
     {
         return user => new UsersDto
         {
-            Id = user.IdentityId,
+            Id = user.Id,
             Mail = user.Mail,
             Name = user.Mail,
             CreatedAtUtc = user.CreatedAtUtc,
