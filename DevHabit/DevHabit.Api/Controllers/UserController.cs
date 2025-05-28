@@ -23,6 +23,12 @@ public class UserController(ApplicationDbContext dbContext, UserContext userCont
     [HttpGet("{id}")]
     public async Task<ActionResult> GetUserById(string id)
     {
+        var userIdFromRequest = await userContext.GetUserIdAsync();
+        if (userIdFromRequest != id)
+        {
+            return Unauthorized();
+        }
+
         var user = await dbContext.Users.Select(UserQueries.ToDto())
                                         .FirstOrDefaultAsync(u => u.Id == id);
 
