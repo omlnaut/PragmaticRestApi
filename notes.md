@@ -426,3 +426,50 @@ CONTINUE HERE
   - In create endpoint: Add UserId in ToEntity
 
 - Update TagsController with similar changes
+
+## Role Based Auth
+
+Authentication and Authorization Workflow:
+
+1. User makes a request
+2. System checks if user is authenticated
+   - If No → Return 401 Unauthorized
+   - If Yes → Proceed to role check
+3. Check user role
+   - Admin → Full Access
+   - Member → Standard Access
+   - No Role → Access Denied
+4. Access outcomes:
+   - Full Access or Standard Access → Return 200 OK
+   - Access Denied → Return 403 Forbidden
+
+- Create static class in entity folder: Roles
+  - Constants: Admin, Member (use nameof for consistent naming)
+
+- In DbExtensions, seed roles using EFCore Identity built-in role support
+  - Create `SeedInitialDataAsync` method
+  - Create scope, resolve RoleManager<IdentityRole>
+  - Check if role exists with RoleExistsAsync()
+  - If not, call CreateAsync
+  - Log completion with app.Logger.LogInformation
+  - Call SeedInitialDataAsync after ApplyMigrationsAsync
+
+- Add roles to access tokens
+  - Extend TokenRequest to include list<string> roles
+  - In GenerateAccessToken, extend claims with ClaimTypes.Role
+  - Update token generation logic
+
+- Assign roles to users in AuthController
+  - On registration: userManager.AddToRoleAsync(identityUser, Roles.Member)
+  - Check IdentityResult after assigning role (similar to existing checks)
+  - In login: Get roles with userManager.GetRolesAsync(identityUser)
+  - Apply same roles handling in Refresh endpoint
+
+- Protect endpoints with role-based authorization
+  - Decorate UsersController with [Authorize(Roles = "admin, member")]
+  - For demo purposes: Add [Authorize(Roles = "admin")] to GetUserById endpoint
+  - For testing: Add roles manually to asp_net_user_roles table
+  - Update other controllers with member role authorization
+
+- Additional authorization check in endpoints
+  - Check specific role with User.IsInRole(...)
