@@ -443,6 +443,7 @@ Authentication and Authorization Workflow:
    - Full Access or Standard Access → Return 200 OK
    - Access Denied → Return 403 Forbidden
 
+Implementation
 - Create static class in entity folder: Roles
   - Constants: Admin, Member (use nameof for consistent naming)
 
