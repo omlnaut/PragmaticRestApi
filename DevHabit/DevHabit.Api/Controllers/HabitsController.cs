@@ -31,7 +31,7 @@ namespace DevHabit.Api.Controllers;
     CustomMediaTypeNames.App.HateoasV1,
     CustomMediaTypeNames.App.HateoasV2
 )]
-[Authorize]
+[Authorize(Roles = $"{Roles.Member}")]
 public class HabitsController(
     ApplicationDbContext dbContext,
     LinkService linkService,

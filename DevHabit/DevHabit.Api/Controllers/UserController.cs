@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DevHabit.Api.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Roles = $"{Roles.Member}")]
 [ApiVersion(1.0)]
 [Route("/users")]
 public class UserController(ApplicationDbContext dbContext, UserContext userContext) : ControllerBase

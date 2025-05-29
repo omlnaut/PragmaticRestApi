@@ -2,6 +2,7 @@ using System.Net.Mime;
 
 using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Tags;
+using DevHabit.Api.Entities;
 using DevHabit.Api.Services;
 
 using FluentValidation;
@@ -19,7 +20,7 @@ namespace DevHabit.Api.Controllers;
     CustomMediaTypeNames.App.JsonV1,
     CustomMediaTypeNames.App.HateoasV1
 )]
-[Authorize]
+[Authorize(Roles = $"{Roles.Member}")]
 public class TagsController(
     ApplicationDbContext dbContext,
     UserContext userContext) : ControllerBase
