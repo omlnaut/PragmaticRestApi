@@ -29,11 +29,14 @@ public class TokenProviderService(IOptions<JwtAuthenticationOptions> options)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
         var claims = new List<Claim>()
         {
             new(JwtRegisteredClaimNames.Sub, request.UserId),
-            new(JwtRegisteredClaimNames.Email, request.Email)
+            new(JwtRegisteredClaimNames.Email, request.Email),
         };
+        var roleClaims = request.Roles.Select(r => new Claim(ClaimTypes.Role, r));
+        claims.AddRange(roleClaims);
 
         var descriptor = new SecurityTokenDescriptor()
         {
