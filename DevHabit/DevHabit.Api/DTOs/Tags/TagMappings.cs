@@ -4,11 +4,12 @@ namespace DevHabit.Api.DTOs.Tags;
 
 internal static class TagMappings
 {
-    public static Tag ToEntity(this CreateTagDto dto)
+    public static Tag ToEntity(this CreateTagDto dto, string userId)
     {
         var tag = new Tag()
         {
             Id = $"t_{Guid.NewGuid()}",
+            UserId = userId,
             Name = dto.Name,
             Description = dto.Description,
             CreatedAtUtc = DateTime.UtcNow

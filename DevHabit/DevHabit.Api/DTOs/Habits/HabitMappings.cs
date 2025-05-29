@@ -30,11 +30,12 @@ internal static class HabitMappings
         ]
     };
 
-    public static Habit ToEntity(this CreateHabitDto dto)
+    public static Habit ToEntity(this CreateHabitDto dto, string userId)
     {
         var habit = new Habit()
         {
             Id = $"h_{Guid.NewGuid()}",
+            UserId = userId,
             Name = dto.Name,
             Type = dto.Type,
             Description = dto.Description,

@@ -32,7 +32,10 @@ namespace DevHabit.Api.Controllers;
     CustomMediaTypeNames.App.HateoasV2
 )]
 [Authorize]
-public class HabitsController(ApplicationDbContext dbContext, LinkService linkService) : ControllerBase
+public class HabitsController(
+    ApplicationDbContext dbContext,
+    LinkService linkService,
+    UserContext userContext) : ControllerBase
 {
     [HttpGet]
     [Produces(MediaTypeNames.Application.Json, CustomMediaTypeNames.App.HateoasV1)]
@@ -240,7 +243,14 @@ public class HabitsController(ApplicationDbContext dbContext, LinkService linkSe
     {
         await validator.ValidateAndThrowAsync(createHabitDto);
 
-        var habit = createHabitDto.ToEntity();
+        var userId = await userContext.GetUserIdAsync();
+
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var habit = createHabitDto.ToEntity(userId);
 
         dbContext.Habits.Add(habit);
 

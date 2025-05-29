@@ -20,7 +20,9 @@ namespace DevHabit.Api.Controllers;
     CustomMediaTypeNames.App.HateoasV1
 )]
 [Authorize]
-public class TagsController(ApplicationDbContext dbContext) : ControllerBase
+public class TagsController(
+    ApplicationDbContext dbContext,
+    UserContext userContext) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<TagsCollectionDto>> GetTags()
@@ -53,11 +55,18 @@ public class TagsController(ApplicationDbContext dbContext) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createTagDto, IValidator<CreateTagDto> validator)
     {
+        var userId = await userContext.GetUserIdAsync();
+
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
         // validate
         await validator.ValidateAndThrowAsync(createTagDto);
 
         // Check if the tag already exists
-        var tag = createTagDto.ToEntity();
+        var tag = createTagDto.ToEntity(userId);
 
         if (await dbContext.Tags.AnyAsync(t => t.Name == tag.Name))
         {

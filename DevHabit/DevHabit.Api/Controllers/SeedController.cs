@@ -2,6 +2,7 @@ using DevHabit.Api.Database;
 using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.DTOs.Tags;
 using DevHabit.Api.Entities;
+using DevHabit.Api.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,19 @@ namespace DevHabit.Api.Controllers;
 [ApiController]
 [Route("seed")]
 [Authorize]
-public class SeedController(ApplicationDbContext dbContext) : ControllerBase
+public class SeedController(
+    ApplicationDbContext dbContext,
+    UserContext userContext) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult> SeedDatabase()
     {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
         // Check if database already has data (to prevent duplicates)
         bool hasData = await dbContext.Habits.AnyAsync() || await dbContext.Tags.AnyAsync();
 
@@ -26,10 +35,10 @@ public class SeedController(ApplicationDbContext dbContext) : ControllerBase
         }
 
         // 1. Create tags
-        var tagIds = await CreateTags();
+        var tagIds = await CreateTags(userId);
 
         // 2. Create habits
-        var habitIds = await CreateHabits();
+        var habitIds = await CreateHabits(userId);
 
         // 3. Create habit-tag relationships
         await CreateHabitTagRelationships(habitIds, tagIds);
@@ -43,7 +52,7 @@ public class SeedController(ApplicationDbContext dbContext) : ControllerBase
         });
     }
 
-    private async Task<Dictionary<string, string>> CreateTags()
+    private async Task<Dictionary<string, string>> CreateTags(string userId)
     {
         var tagsData = new List<CreateTagDto>
         {
@@ -60,7 +69,7 @@ public class SeedController(ApplicationDbContext dbContext) : ControllerBase
 
         foreach (var tagData in tagsData)
         {
-            var tag = tagData.ToEntity();
+            var tag = tagData.ToEntity(userId);
             dbContext.Tags.Add(tag);
             await dbContext.SaveChangesAsync();
 
@@ -70,7 +79,7 @@ public class SeedController(ApplicationDbContext dbContext) : ControllerBase
         return tagIds;
     }
 
-    private async Task<Dictionary<string, string>> CreateHabits()
+    private async Task<Dictionary<string, string>> CreateHabits(string userId)
     {
         var habitsData = new List<CreateHabitDto>
         {
@@ -175,7 +184,7 @@ public class SeedController(ApplicationDbContext dbContext) : ControllerBase
 
         foreach (var habitData in habitsData)
         {
-            var habit = habitData.ToEntity();
+            var habit = habitData.ToEntity(userId);
             dbContext.Habits.Add(habit);
             await dbContext.SaveChangesAsync();
 
