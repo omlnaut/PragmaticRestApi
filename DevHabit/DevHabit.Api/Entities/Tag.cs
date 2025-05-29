@@ -3,6 +3,7 @@ namespace DevHabit.Api.Entities;
 public sealed class Tag
 {
     public required string Id { get; set; }
+    public required string UserId { get; set; }
 
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
