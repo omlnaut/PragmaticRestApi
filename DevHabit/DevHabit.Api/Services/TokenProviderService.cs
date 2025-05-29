@@ -2,6 +2,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
+using DevHabit.Api.DTOs.Auth;
+
 using DevHabit.Api.DTOs.Users;
 using DevHabit.Api.Settings;
 
