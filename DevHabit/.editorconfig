@@ -377,6 +377,7 @@ dotnet_diagnostic.CA2007.severity = none
 dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA1031.severity = none
 dotnet_diagnostic.CA1002.severity = none # Do not expose generic lists
+dotnet_diagnostic.CA1861.severity = none # prefer static readonly fields (migration stuff)
 
 
 
