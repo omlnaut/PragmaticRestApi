@@ -27,8 +27,15 @@ public class TagsController(
     [HttpGet]
     public async Task<ActionResult<TagsCollectionDto>> GetTags()
     {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
         List<TagDto> tags = await dbContext
             .Tags
+            .Where(t => t.UserId == userId)
             .Select(TagQueries.ToDto())
             .ToListAsync();
 
@@ -40,7 +47,14 @@ public class TagsController(
     [HttpGet("{id}")]
     public async Task<ActionResult<TagDto>> GetTagById(string id)
     {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
         var tag = await dbContext.Tags
+            .Where(t => t.UserId == userId)
             .Select(TagQueries.ToDto())
             .FirstOrDefaultAsync(t => t.Id == id);
 
@@ -68,7 +82,9 @@ public class TagsController(
         // Check if the tag already exists
         var tag = createTagDto.ToEntity(userId);
 
-        if (await dbContext.Tags.AnyAsync(t => t.Name == tag.Name))
+        if (await dbContext.Tags
+            .Where(t => t.UserId == userId)
+            .AnyAsync(t => t.Name == tag.Name))
         {
             var problem = ProblemDetailsFactory.CreateProblemDetails(HttpContext, StatusCodes.Status400BadRequest);
             problem.Extensions.Add("details", $"Tag with the name {tag.Name} already exists");
@@ -87,8 +103,15 @@ public class TagsController(
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateTag(string id, [FromBody] UpdateTagDto updateTagDto)
     {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
 
-        var tag = await dbContext.Tags.FirstOrDefaultAsync(t => t.Id == id);
+        var tag = await dbContext.Tags
+            .Where(t => t.UserId == userId)
+            .FirstOrDefaultAsync(t => t.Id == id);
 
         if (tag is null)
         {
@@ -104,7 +127,15 @@ public class TagsController(
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteTag(string id)
     {
-        var tag = await dbContext.Tags.FirstOrDefaultAsync(t => t.Id == id);
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var tag = await dbContext.Tags
+            .Where(t => t.UserId == userId)
+            .FirstOrDefaultAsync(t => t.Id == id);
 
         if (tag is null)
         {
