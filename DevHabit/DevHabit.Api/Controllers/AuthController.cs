@@ -55,12 +55,13 @@ public class AuthController(
         }
 
         var user = dto.ToEntity(identityUser.Id);
+        await userManager.AddToRoleAsync(identityUser, Roles.Member);
 
         await appDbContext.Users.AddAsync(user);
 
         await appDbContext.SaveChangesAsync();
 
-        var accessTokenDto = tokenProviderService.Create(new TokenRequest(identityUser.Id, identityUser.Email));
+        var accessTokenDto = tokenProviderService.Create(new TokenRequest(identityUser.Id, identityUser.Email, [Roles.Member]));
         var refreshToken = accessTokenDto.ToRefreshTokenEntity(identityUser.Id, _options.RefreshTokenExpirationDays);
 
         await identityDbContext.RefreshTokens.AddAsync(refreshToken);
@@ -81,7 +82,9 @@ public class AuthController(
             return Unauthorized();
         }
 
-        var tokenRequest = new TokenRequest(identityUser.Id, dto.Email);
+        var roles = await userManager.GetRolesAsync(identityUser);
+
+        var tokenRequest = new TokenRequest(identityUser.Id, dto.Email, [.. roles]);
         var tokens = tokenProviderService.Create(tokenRequest);
 
         var refreshToken = tokens.ToRefreshTokenEntity(identityUser.Id, _options.RefreshTokenExpirationDays);
@@ -107,7 +110,8 @@ public class AuthController(
             return Unauthorized();
         }
 
-        var request = new TokenRequest(dbToken.User.Id, dbToken.User.Email);
+        var roles = await userManager.GetRolesAsync(dbToken.User);
+        var request = new TokenRequest(dbToken.User.Id, dbToken.User.Email, [.. roles]);
         var tokens = tokenProviderService.Create(request);
 
         dbToken.Token = tokens.RefreshToken;
