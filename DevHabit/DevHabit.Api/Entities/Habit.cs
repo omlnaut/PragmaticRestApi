@@ -3,6 +3,7 @@ namespace DevHabit.Api.Entities;
 public sealed class Habit
 {
     public required string Id { get; set; }
+    public required string UserId { get; set; }
     public string Name { get; set; } = string.Empty;
     public HabitType Type { get; set; }
     public string? Description { get; set; }
@@ -15,8 +16,8 @@ public sealed class Habit
     public DateTime CreatedAtUtc { get; set; }
     public DateTime? UpdatedAtUtc { get; set; }
     public DateTime? LastCompletedAt { get; set; }
-    public List<HabitTag> HabitTags { get; init; } = new List<HabitTag>();
-    public List<Tag> Tags { get; init; } = new List<Tag>();
+    public List<HabitTag> HabitTags { get; init; } = [];
+    public List<Tag> Tags { get; init; } = [];
 }
 
 public sealed class Milestone
