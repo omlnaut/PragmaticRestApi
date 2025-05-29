@@ -43,6 +43,12 @@ public class HabitsController(
                                                                    SortMappingProvider sortMappingProvider,
                                                                    DataShapingService dataShapingService)
     {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
         query.Search ??= query.Search?.Trim().ToUpper(System.Globalization.CultureInfo.InvariantCulture);
 
         var sortMappings = sortMappingProvider.GetMappings<HabitDto, Habit>();
@@ -64,6 +70,7 @@ public class HabitsController(
         }
 
         var habitsQueryable = dbContext.Habits
+            .Where(h => h.UserId == userId)
             .Where(h => query.Search == null || h.Name.Contains(query.Search, StringComparison.InvariantCultureIgnoreCase)
                     || h.Description != null
                     && h.Description.Contains(query.Search, StringComparison.InvariantCultureIgnoreCase))
@@ -103,6 +110,12 @@ public class HabitsController(
                                                  GetHabitParameters query,
                                                  DataShapingService dataShapingService)
     {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
         if (!dataShapingService.Validate<HabitWithTagsDto>(query.Fields))
         {
             return Problem(
@@ -112,6 +125,7 @@ public class HabitsController(
         }
 
         var habit = await dbContext.Habits
+            .Where(h => h.UserId == userId)
             .Select(HabitQueries.ToHabitsWithTagsDto())
             .FirstOrDefaultAsync(h => h.Id == id);
 
@@ -137,6 +151,12 @@ public class HabitsController(
                                                  GetHabitParameters query,
                                                  DataShapingService dataShapingService)
     {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
 #pragma warning disable S1481 // Unused local variables should be removed
 
         var versionFromRequest = HttpContext.GetRequestedApiVersion();
@@ -153,6 +173,7 @@ public class HabitsController(
         }
 
         var habit = await dbContext.Habits
+            .Where(h => h.UserId == userId)
             .Select(HabitQueries.ToHabitsWithTagsDtoV2())
             .FirstOrDefaultAsync(h => h.Id == id);
 
@@ -265,8 +286,15 @@ public class HabitsController(
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateHabit(string id, [FromBody] UpdateHabitDto updateHabitDto)
     {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
 
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id);
+        var habit = await dbContext.Habits
+            .Where(h => h.UserId == userId)
+            .FirstOrDefaultAsync(h => h.Id == id);
 
         if (habit is null)
         {
@@ -282,7 +310,15 @@ public class HabitsController(
     [HttpPatch("{id}")]
     public async Task<ActionResult> PatchHabit(string id, JsonPatchDocument<HabitDto> patchDocument)
     {
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id);
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var habit = await dbContext.Habits
+            .Where(h => h.UserId == userId)
+            .FirstOrDefaultAsync(h => h.Id == id);
 
         if (habit is null)
         {
@@ -309,7 +345,15 @@ public class HabitsController(
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteHabit(string id)
     {
-        var habit = await dbContext.Habits.FirstOrDefaultAsync(h => h.Id == id);
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var habit = await dbContext.Habits
+            .Where(h => h.UserId == userId)
+            .FirstOrDefaultAsync(h => h.Id == id);
 
         if (habit is null)
         {
