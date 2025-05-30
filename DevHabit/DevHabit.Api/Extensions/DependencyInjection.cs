@@ -7,6 +7,7 @@ using DevHabit.Api.DTOs.Habits;
 using DevHabit.Api.Entities;
 using DevHabit.Api.Middleware;
 using DevHabit.Api.Services;
+using DevHabit.Api.Services.GitHub;
 using DevHabit.Api.Services.Sorting;
 using DevHabit.Api.Settings;
 
@@ -131,7 +132,20 @@ public static class DependencyInjectionExtensions
         builder.Services.AddTransient<TokenProviderService>();
 
         builder.Services.AddScoped<UserContext>();
-        builder.Services.AddMemoryCache();
+        builder.Services.AddMemoryCache(); builder.Services.AddTransient<GitHubService>();
+        builder.Services.AddScoped<GitHubAccessTokenService>();
+
+        _ = builder.Services.AddHttpClient("github").ConfigureHttpClient(c =>
+        {
+
+#pragma warning disable S1075 // URIs should not be hardcoded
+            c.BaseAddress = new Uri("https://api.github.com");
+#pragma warning restore S1075 // URIs should not be hardcoded
+            c.DefaultRequestHeaders.UserAgent.Add(
+                new System.Net.Http.Headers.ProductInfoHeaderValue("DevHabit", "1.0"));
+            c.DefaultRequestHeaders.Accept.Add(
+                new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+        });
 
         return builder;
     }

@@ -180,6 +180,9 @@ csharp_preserve_single_line_statements = true
 # CA1000: Do not declare static members on generic types
 dotnet_diagnostic.CA1000.severity = none
 
+# IDE0320: Make anonymous function static
+dotnet_diagnostic.IDE0320.severity = none
+
 [*.{cs,vb}]
 
 # Naming rules
