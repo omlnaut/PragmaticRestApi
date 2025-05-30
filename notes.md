@@ -474,3 +474,64 @@ Implementation
 
 - Additional authorization check in endpoints
   - Check specific role with User.IsInRole(...)
+
+## External APIs
+
+- We'll use access token auth with rate limit of 5000 requests per hour
+- Endpoints we'll use:
+  - Get authenticated user
+  - List events for authenticated user
+
+### Code changes
+
+- **GithHubAccessToken Entity**
+  - Properties: Id, UserId, Token, ExpiresAtUtc, CreatedAtUtc
+  - Configuration: max lengths, UserId unique, hasone<User>WithOne.GithubKey
+
+- **GithubAccessTokenService**
+  - `StoreAsync(userId, GithubAccessTokenDto)`
+    - If Token Exists: overwrite
+    - Else: add (id = gh_guid)
+  - `GetAsync(userId)` fetches token from db and returns string?
+  - `RevokeAsync` removes key from db
+
+- **GitHubService**(httpClientFactory, ILogger<GithubService>)
+  - `GetUserProfileAsync(accessToken)`
+    - client from factory(accessToken)
+    - response GetAsync("user")
+    - deserialize into GitHubUserProfileDto
+  - `GetUserEventsAsync(username, accessToken)`
+    - create client
+    - Get "users/username/events?per_page=100"
+    - deserialize to GithubEventDto
+  - Private createGithubClient
+    - CreateClient("github")
+    - Configure rest via DI
+    - DefaultRequestHeaders.Auth = new authheaderValue("bearer", token)
+
+- **DI.AddApplicationServices**
+  - AccessTokenService Scoped
+  - GithubService Transient
+  - .AddHttpClient("github")
+  - .Configure(BaseAdress, UserAgent new ProductInfoHeaderValue("DevHabit", "1.0")
+  - Accept(new MediaTypeWithQual(<from docs>)
+  - Create migration
+
+- **GitHubController**
+  - [Route("github")] [ApiController] [Auth]
+  - Dependencies: GithubAccessTokenService, GitHubService, UserContext, linkService
+  - `Put("personal-access-token")` StoreAccessToken(StoreGithubAccessTokenDto)
+    - Get userId
+    - ghaccessTokenService.StoreAsync(userId, dto)
+  - Copy for revoke, HttpDelete
+  - `GET(profile)` ActionResult<GithubUserProfileDto> GetUserProfile
+    - gh.GetAsync(userId)
+    - gh.GetUserProfileAsync
+  - HATEOAS links for:
+    - GetUserProfile(self)
+    - StoreAccessToken(store-token)
+    - RevoceAccessToken(revoke-token)
+  - Bind AcceptHeaderDto for includeLinks
+
+- Go to github settings/profile/developer settings/personal access tokens -> classic
+- ProfileDto properties: login, name, avatar_url, bio, public_repos, followers, following, links
