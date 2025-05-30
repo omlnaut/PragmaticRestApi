@@ -38,6 +38,12 @@ public class GitHubAccessTokenService(ApplicationDbContext applicationDbContext)
         await applicationDbContext.SaveChangesAsync();
     }
 
+    public async Task<string?> GetAsync(string userId)
+    {
+        var tokenEntity = await GetToken(userId);
+        return tokenEntity?.Token;
+    }
+
     private async Task<GitHubAccessToken?> GetToken(string userId)
     {
         return await applicationDbContext
