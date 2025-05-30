@@ -44,6 +44,19 @@ public class GitHubAccessTokenService(ApplicationDbContext applicationDbContext)
         return tokenEntity?.Token;
     }
 
+    public async Task RevokeAsync(string userId)
+    {
+        var tokenEntity = await GetToken(userId);
+
+        if (tokenEntity is null)
+        {
+            return;
+        }
+
+        applicationDbContext.Remove(tokenEntity);
+        await applicationDbContext.SaveChangesAsync();
+    }
+
     private async Task<GitHubAccessToken?> GetToken(string userId)
     {
         return await applicationDbContext
