@@ -32,6 +32,28 @@ public class GitHubService(IHttpClientFactory httpClientFactory, ILogger<GitHubS
         }
     }
 
+    public async Task<string> GetUserEvents(string username, string accessToken)
+    {
+        var client = GetHttpClient(accessToken);
+
+        try
+        {
+            var uri = new Uri($"users/{username}/events?per_page=100", UriKind.Relative);
+            var response = await client.GetAsync(uri);
+
+            response.EnsureSuccessStatusCode();
+
+            var rawEvents = await response.Content.ReadAsStringAsync();
+
+            return rawEvents;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get GitHub user profile");
+            return string.Empty;
+        }
+    }
+
     private HttpClient GetHttpClient(string accessToken)
     {
         var client = httpClientFactory.CreateClient("github");

@@ -19,8 +19,8 @@ public class GitHubController(
     GitHubAccessTokenService gitHubAccessTokenService,
     UserContext userContext) : ControllerBase
 {
-    [HttpGet]
-    public async Task<ActionResult<string>> GetProfile()
+    [HttpGet("profile")]
+    public async Task<ActionResult> GetProfile()
     {
         var userId = await userContext.GetUserIdAsync();
         if (userId is null)
@@ -43,6 +43,32 @@ public class GitHubController(
         }
 
         return Ok(profileDto);
+    }
+
+    [HttpGet("events")]
+    public async Task<ActionResult<string>> GetEvents(string username)
+    {
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
+        {
+            return Unauthorized();
+        }
+
+        var accessToken = await gitHubAccessTokenService.GetAsync(userId);
+
+        if (accessToken is null)
+        {
+            return Forbid();
+        }
+
+        var events = await gitHubService.GetUserEvents(username, accessToken);
+
+        if (events == null)
+        {
+            return NotFound("GitHub profile not found");
+        }
+
+        return Ok(events);
     }
 
     [HttpPut("personal-access-token")]
