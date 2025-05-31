@@ -15,6 +15,7 @@ public class GitHubAccessTokenService(ApplicationDbContext applicationDbContext)
     public async Task StoreAsync(string userId, StoreGithubAccessTokenDto dto)
     {
         var dbToken = await GetToken(userId);
+        var expiresInDays = dto.ExpiresInDays ?? 30;
 
         if (dbToken is null)
         {
@@ -23,7 +24,7 @@ public class GitHubAccessTokenService(ApplicationDbContext applicationDbContext)
                 Id = $"gh_{Guid.NewGuid()}",
                 UserId = userId,
                 Token = dto.Token,
-                ExpiresAtUtc = DateTime.UtcNow.AddDays(dto.ExpiresInDays),
+                ExpiresAtUtc = DateTime.UtcNow.AddDays(expiresInDays),
                 CreatedAtUtc = DateTime.UtcNow
             };
             applicationDbContext.GitHubAccessTokens.Add(newToken);
@@ -31,7 +32,7 @@ public class GitHubAccessTokenService(ApplicationDbContext applicationDbContext)
         else
         {
             dbToken.Token = dto.Token;
-            dbToken.ExpiresAtUtc = DateTime.UtcNow.AddDays(dto.ExpiresInDays);
+            dbToken.ExpiresAtUtc = DateTime.UtcNow.AddDays(expiresInDays);
             dbToken.CreatedAtUtc = DateTime.UtcNow;
         }
 
@@ -66,4 +67,4 @@ public class GitHubAccessTokenService(ApplicationDbContext applicationDbContext)
 
 }
 
-public sealed record StoreGithubAccessTokenDto(string Token, int ExpiresInDays);
+public sealed record StoreGithubAccessTokenDto(string Token, int? ExpiresInDays);
