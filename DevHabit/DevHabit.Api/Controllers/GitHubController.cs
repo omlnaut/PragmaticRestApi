@@ -17,10 +17,11 @@ public class GitHubController(
 #pragma warning restore S6960 // Controllers should not have mixed responsibilities
     GitHubService gitHubService,
     GitHubAccessTokenService gitHubAccessTokenService,
-    UserContext userContext) : ControllerBase
+    UserContext userContext,
+    LinkService linkService) : ControllerBase
 {
     [HttpGet("profile")]
-    public async Task<ActionResult> GetProfile()
+    public async Task<ActionResult> GetProfile([FromHeader] AcceptHeaderDto acceptHeaderDto)
     {
         var userId = await userContext.GetUserIdAsync();
         if (userId is null)
@@ -41,6 +42,14 @@ public class GitHubController(
         {
             return NotFound("GitHub profile not found");
         }
+
+        if (acceptHeaderDto.IncludeLinks)
+        {
+            profileDto.Links.Add(linkService.CreateLink(nameof(GetProfile), "self", HttpMethods.Get));
+            profileDto.Links.Add(linkService.CreateLink(nameof(StoreAccessToken), "store-token", HttpMethods.Put));
+            profileDto.Links.Add(linkService.CreateLink(nameof(RevokeAccessToken), "revoke-token", HttpMethods.Delete));
+        }
+
 
         return Ok(profileDto);
     }
