@@ -1,10 +1,14 @@
 using System.Net.Http.Headers;
 
+using DevHabit.Api.Controllers;
+
+using Newtonsoft.Json;
+
 namespace DevHabit.Api.Services.GitHub;
 
 public class GitHubService(IHttpClientFactory httpClientFactory, ILogger<GitHubService> logger)
 {
-    public async Task<string?> GetUserProfileAsync(string accessToken)
+    public async Task<GithubProfileDto?> GetUserProfileAsync(string accessToken)
     {
         var client = GetHttpClient(accessToken);
 
@@ -15,8 +19,11 @@ public class GitHubService(IHttpClientFactory httpClientFactory, ILogger<GitHubS
 
             response.EnsureSuccessStatusCode();
 
-            var content = await response.Content.ReadAsStringAsync();
-            return content;
+            var rawProfile = await response.Content.ReadAsStringAsync();
+
+            var profileDto = JsonConvert.DeserializeObject<GithubProfileDto>(rawProfile);
+
+            return profileDto;
         }
         catch (Exception ex)
         {

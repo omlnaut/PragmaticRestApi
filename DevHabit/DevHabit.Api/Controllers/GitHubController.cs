@@ -1,6 +1,7 @@
 using DevHabit.Api.Services;
 using DevHabit.Api.Services.GitHub;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,20 +20,26 @@ public class GitHubController(
     UserContext userContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<string>> GetProfile(string accessToken)
+    public async Task<ActionResult<string>> GetProfile()
     {
-
-        var rawProfile = await gitHubService.GetUserProfileAsync(accessToken);
-
-        if (rawProfile == null)
+        var userId = await userContext.GetUserIdAsync();
+        if (userId is null)
         {
-            return NotFound("GitHub profile not found");
+            return Unauthorized();
         }
 
-        var profileDto = JsonConvert.DeserializeObject<GithubProfileDto>(rawProfile);
+        var accessToken = await gitHubAccessTokenService.GetAsync(userId);
+
+        if (accessToken is null)
+        {
+            return Forbid();
+        }
+
+        var profileDto = await gitHubService.GetUserProfileAsync(accessToken);
+
         if (profileDto == null)
         {
-            return BadRequest("Failed to parse GitHub profile data");
+            return NotFound("GitHub profile not found");
         }
 
         return Ok(profileDto);
